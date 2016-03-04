@@ -1,0 +1,26 @@
+import React, { Component, PropTypes } from 'react';
+
+export default class FeedbackFormSubmit extends Component {
+  static propTypes = {
+    onInvalid: PropTypes.func,
+    onClick: PropTypes.func,
+  }
+
+  static contextTypes = {
+    form: PropTypes.object,
+  }
+
+
+  handleClick(e) {
+    if (!this.context.form.isValid()) {
+      e.preventDefault();
+      this.context.form.forceValidate();
+      if (this.props.onInvalid) this.props.onInvalid(e);
+    }
+    if (this.props.onClick) this.props.onClick(e);
+  }
+
+  render() {
+    return <input type="submit" {...this.props} onClick={e => this.handleClick(e)}/>;
+  }
+}
