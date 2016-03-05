@@ -16,13 +16,17 @@ Forms are not currently fun to work with in React.  There are a lot of form libr
 
 [Simple Form With Animations Using mation](http://theadam.github.io/react-inform/examples/mation-example/)
 
+## Installation
+
+`npm install --save react-inform`
+
 ## Guide
 
 Creating a [simple validating form](https://jsfiddle.net/theadam/Lc3nkx7g/3/embedded/result%2Cjs%2Ccss%2Chtml%2Cresources/) is easy with `react-inform`.
 
 `react-inform` provides a simple decorator.  To that decorator you provide a list of fields in the form, and an optional validate function.  The `validate` function takes in an object where the keys are fieldnames and the values are the values of the fields, and it should return an object where the keys are fieldnames and the values are error strings.
 
-We can configure a simple form that has the fields `username`, `password`, and `confirmPassword`.  This form will just validate that the `username` and `password` exist and that `confirmPassword` matches the password.  First just create the fields and validate function.
+We can configure a simple form that has the fields `username`, `password`, and `confirmPassword`.  This form will just validate that the `username` and `password` exist and that `confirmPassword` matches the password.  First just create the fields and validate function.  There is a helper function to aid in creating these validate functions, but for now, we will write one out by hand to get the hang of it.
 
 ```js
 const fields = ['username', 'password', 'confirmPassword'];
