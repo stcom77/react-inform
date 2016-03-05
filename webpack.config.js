@@ -2,6 +2,13 @@
 
 var webpack = require('webpack');
 
+var reactExternal = {
+  root: 'React',
+  commonjs2: 'react',
+  commonjs: 'react',
+  amd: 'react'
+};
+
 var plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
@@ -31,6 +38,7 @@ module.exports = {
     libraryTarget: 'umd'
   },
   externals: {
+    react: reactExternal,
   },
   plugins: plugins,
   resolve: {
