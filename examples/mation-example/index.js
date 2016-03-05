@@ -2,6 +2,7 @@ import './index.css';
 import './foundation.css';
 
 import React, { Component } from 'react';
+import TextArea from 'react-textarea-autosize';
 import { render } from 'react-dom';
 import alertify from 'alertify.js';
 import { isEmail } from 'string-validator';
@@ -94,7 +95,6 @@ class MyForm extends Component {
   }
 }
 
-
 class App extends Component {
   state= {
     value: {
@@ -104,13 +104,31 @@ class App extends Component {
     },
   };
 
+  setValue(value) {
+    this.setState({value, typedValue: undefined});
+  }
+
+  handleChange(e) {
+    const { value } = e.target;
+    this.setState({typedValue: value});
+
+    try {
+      const objValue = JSON.parse(value);
+      this.setState({value: objValue});
+    } catch (error) {
+      // do nothing
+    }
+  }
+
   render() {
+    const { value, typedValue } = this.state;
     return (
       <div>
         <div className="panel callout">
-          <MyForm onChange={value => this.setState({value})} formData={this.state.value}/>
+          <MyForm onChange={v=> this.setValue(v)} formData={value}/>
         </div>
-        <pre>{JSON.stringify(this.state.value, null, ' ')}</pre>
+        <small>Try editing this</small>
+        <TextArea useCacheForDOMMeasurements value={typedValue || JSON.stringify(value, null, ' ')} onChange={e => this.handleChange(e)}/>
       </div>
     );
   }
