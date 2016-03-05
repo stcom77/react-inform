@@ -1,0 +1,10 @@
+#container {
+  margin-top: 40px;
+}
+
+.ui-hint {
+  color: #DD0000;
+  display: block;
+  font-size: 1em;
+  margin-top: -15px;
+}
