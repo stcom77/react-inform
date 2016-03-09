@@ -7,9 +7,8 @@ export default class FeedbackFormSubmit extends Component {
   }
 
   static contextTypes = {
-    form: PropTypes.object,
+    form: PropTypes.object.isRequired,
   }
-
 
   handleClick(e) {
     if (!this.context.form.isValid()) {

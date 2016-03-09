@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 export default class DisabledFormSubmit extends Component {
   static contextTypes = {
-    form: PropTypes.object,
+    form: PropTypes.object.isRequired,
   }
 
   render() {

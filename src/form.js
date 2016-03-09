@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import getValue from './getValue';
 
 export default function form({fields, validate = () => ({})}) {
-  return (Wrapped) => class Wrapper extends Component {
+  return (Wrapped) => class FormWrapper extends Component {
     static childContextTypes = {
       form: PropTypes.object,
       fields: PropTypes.object,
@@ -20,46 +20,68 @@ export default function form({fields, validate = () => ({})}) {
       this.values = {};
       this.touched = {};
       this.resolveErrors();
-      if (props.formData) this.applyValues(props.formData);
+      if (props.formData !== undefined) this.setEachValue(props.formData);
     }
 
     createFields(newFields) {
       return newFields.reduce((acc, v) => ({...acc, [v]: this.createField(v)}), {});
     }
 
-    change(name, e, forced) {
-      const value = getValue(e);
-      this.fields[name].value = value;
-      if (typeof value === 'boolean') this.fields[name].checked = value;
-      else delete this.fields[name].checked;
-      this.values[name] = value;
-      if (value !== undefined) this.touched[name] = true;
-      if (!forced) {
-        this.resolveErrors();
-        this.forceUpdate();
-        if (this.props.onChange) this.props.onChange(this.values);
-      }
+    createField(name) {
+      return {
+        onBlur: () => this.blur(name),
+        onChange: e => this.handleChange(name, e),
+        value: undefined,
+      };
     }
 
-    applyValues(data) {
+    handleChange(name, e) {
+      const value = getValue(e);
+      const changed = this.setValues({...this.values, [name]: value});
+      if (changed) this.forceUpdate();
+    }
+
+    pushChanges(data) {
+      if (this.props.onChange) this.props.onChange(data || this.values);
+    }
+
+    setValue(name, value) {
+      if (this.values[name] === value) return false;
+      this.fields[name].value = value;
+      this.values[name] = value;
+      if (typeof value === 'boolean') this.fields[name].checked = value;
+      else delete this.fields[name].checked;
+      if (value !== undefined) this.touched[name] = true;
+      return true;
+    }
+
+    flushChanges() {
+      this.resolveErrors();
+      this.forceUpdate();
+    }
+
+    setEachValue(data) {
+      let changed = false;
       fields.forEach(field => {
         const prop = data[field];
-        this.change(field, prop, true);
+        changed = this.setValue(field, prop) || changed;
       });
-      this.resolveErrors();
+      if (changed) this.resolveErrors();
+      return changed;
     }
 
     setValues(data) {
-      if (this.props.formData && this.props.onChange) {
-        this.props.onChange(data);
-      } else {
-        this.applyValues(data);
+      let changed = false;
+      if (this.props.formData === undefined) {
+        changed = this.setEachValue(data);
       }
+      this.pushChanges(data);
+      return changed;
     }
 
     componentWillReceiveProps(nextProps) {
-      if (this.props.formData !== nextProps.formData) {
-        this.applyValues(nextProps.formData);
+      if (nextProps.formData !== undefined && this.props.formData !== nextProps.formData) {
+        this.setEachValue(nextProps.formData);
       }
     }
 
@@ -75,18 +97,8 @@ export default function form({fields, validate = () => ({})}) {
     blur(name) {
       if (!this.touched[name]) {
         this.touched[name] = true;
-        this.resolveErrors();
-        this.forceUpdate();
+        this.flushChanges();
       }
-    }
-
-    createField(name) {
-      return {
-        onFocus: () => true,
-        onBlur: () => this.blur(name),
-        onChange: e => this.change(name, e),
-        value: undefined,
-      };
     }
 
     touchAll() {
@@ -100,23 +112,26 @@ export default function form({fields, validate = () => ({})}) {
         isValid: () => Object.keys(this.errors).length === 0,
         forceValidate: () => {
           this.touchAll();
-          this.resolveErrors();
-          this.forceUpdate();
+          this.flushChanges();
         },
         values: () => this.values,
         onValues: values => this.setValues(values),
       };
     }
 
-    getChildContext() {
+    generatedProps() {
       return {
         form: this.formProps(),
         fields: this.fields,
       };
     }
 
+    getChildContext() {
+      return this.generatedProps();
+    }
+
     render() {
-      return <Wrapped fields={this.fields} {...this.props} form={this.formProps()}/>;
+      return <Wrapped {...this.generatedProps()} {...this.props}/>;
     }
   };
 }

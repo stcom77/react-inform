@@ -6,7 +6,7 @@ export default class ResetFormButton extends Component {
   }
 
   static contextTypes = {
-    form: PropTypes.object,
+    form: PropTypes.object.isRequired,
   }
 
   handleClick(e) {
