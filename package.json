@@ -18,7 +18,8 @@
     "decorator",
     "easy",
     "light",
-    "lightweight"
+    "lightweight",
+    "react-component"
   ],
   "scripts": {
     "clean": "rimraf lib dist",
