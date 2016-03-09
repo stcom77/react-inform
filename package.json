@@ -1,13 +1,25 @@
 {
   "name": "react-inform",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple controlled forms with validations in react",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/theadam/react-inform.git"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "forms",
+    "form",
+    "inform",
+    "validate",
+    "validation",
+    "input",
+    "decorator",
+    "easy",
+    "light",
+    "lightweight"
+  ],
   "scripts": {
     "clean": "rimraf lib dist",
     "build:lib": "babel src --loose --out-dir lib",
