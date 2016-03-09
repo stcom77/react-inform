@@ -150,3 +150,6 @@ A Component which can be used inside a React Component wrapped with `react-infor
 
 A Component which can be used inside a React Component wrapped with `react-inform`.  When clicked, if the form has invalid fields, it will force those fields' errors to be passed as props.  If the form is valid, it will submit theform.
 
+## License
+
+MIT
