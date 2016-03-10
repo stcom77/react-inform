@@ -3,7 +3,7 @@ import React from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
 
-import ResetFormButton from '../src/ResetFormButton';
+import ResetFormButton from '../src/resetFormButton';
 
 describe('ResetFormButton', () => {
   let context;
