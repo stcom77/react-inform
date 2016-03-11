@@ -1,3 +1,4 @@
+[![Circle CI](https://circleci.com/gh/theadam/react-inform.svg?style=shield)](https://circleci.com/gh/theadam/react-inform)
 # react-inform
 
 Forms are not currently fun to work with in React.  There are a lot of form libraries out there, but a lot of them have issues making them a pain to work with.  These issues include:
@@ -92,7 +93,7 @@ The validate function should accept a map of fieldnames to values, and return a 
 
 #### Accepted properties
 
-* `formData`: to control the data in the form from the parent of a form.
+* `value`: to control the data in the form from the parent of a form.
 * `onChange`: to react to changes to the form in the parent of a form.
 
 #### Properties passed to wrapped components

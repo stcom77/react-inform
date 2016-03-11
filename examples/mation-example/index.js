@@ -125,7 +125,7 @@ class App extends Component {
     return (
       <div>
         <div className="panel callout">
-          <MyForm onChange={v=> this.setValue(v)} formData={value}/>
+          <MyForm onChange={v=> this.setValue(v)} value={value}/>
         </div>
         <small>Try editing this</small>
         <TextArea useCacheForDOMMeasurements value={typedValue || JSON.stringify(value, null, ' ')} onChange={e => this.handleChange(e)}/>

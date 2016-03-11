@@ -10,7 +10,7 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     static propTypes = {
-      formData: PropTypes.object,
+      value: PropTypes.object,
       onChange: PropTypes.func,
     }
 
@@ -20,7 +20,7 @@ export default function form({fields, validate = () => ({})}) {
       this.values = {};
       this.touched = {};
       this.resolveErrors();
-      if (props.formData !== undefined) this.setEachValue(props.formData);
+      if (props.value !== undefined) this.setEachValue(props.value);
     }
 
     createFields(newFields) {
@@ -72,7 +72,7 @@ export default function form({fields, validate = () => ({})}) {
 
     setValues(data) {
       let changed = false;
-      if (this.props.formData === undefined) {
+      if (this.props.value === undefined) {
         changed = this.setEachValue(data);
       }
       this.pushChanges(data);
@@ -80,8 +80,8 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     componentWillReceiveProps(nextProps) {
-      if (nextProps.formData !== undefined && this.props.formData !== nextProps.formData) {
-        this.setEachValue(nextProps.formData);
+      if (nextProps.value !== undefined && this.props.value !== nextProps.value) {
+        this.setEachValue(nextProps.value);
       }
     }
 
