@@ -51,7 +51,6 @@ export default function form({fields, validate = () => ({})}) {
       this.values[name] = value;
       if (typeof value === 'boolean') this.fields[name].checked = value;
       else delete this.fields[name].checked;
-      if (value !== undefined) this.touched[name] = true;
       return true;
     }
 

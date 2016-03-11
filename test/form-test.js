@@ -88,18 +88,6 @@ describe('form', () => {
         });
       });
 
-      describe('when changed to an invalid value', () => {
-        beforeEach(() => {
-          render();
-          output.props.fields.field.onChange('INVALID');
-          update();
-        });
-
-        it('passes the error property', () => {
-          expect(output.props.fields.field.error).toEqual('FIELD INVALID');
-        });
-      });
-
       describe('when changed to a boolean value', () => {
         beforeEach(() => {
           render();
