@@ -102,7 +102,7 @@ The validate function should accept a map of fieldnames to values, and return a 
 
 Form contains some utility functions to affect the wrapping form.  These include:
 
-* `isValid()`: returns trus if all of the fields are valid
+* `isValid()`: returns true if all of the fields are valid
 * `forceValidate()`: Causes all of the fields to get passed their error properties.  Usually errors are only passed after the field has been "touched" (either after onBlur or onChange).
 * `value()`: returns the current value of all the form fields as a map.
 * `onValues(values)`: forcefully sets all of the values in the form to the passed values.
