@@ -55,5 +55,6 @@
   },
   "peerDependencies": {
     "react": "^0.14.7"
-  }
+  },
+  "dependencies": {}
 }
