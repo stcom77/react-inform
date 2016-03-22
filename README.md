@@ -17,6 +17,8 @@ Forms are not currently fun to work with in React.  There are a lot of form libr
 
 [Simple Form With Animations Using mation](http://theadam.github.io/react-inform/examples/mation-example/)
 
+[Integration with react-intl](https://jsfiddle.net/d0hypvtz/8/)
+
 ## Installation
 
 `npm install --save react-inform`
