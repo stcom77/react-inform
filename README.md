@@ -97,6 +97,7 @@ The validate function should accept a map of fieldnames to values, and return a 
 
 * `value`: to control the data in the form from the parent of a form.
 * `onChange`: to react to changes to the form in the parent of a form.
+* `onValidate`: to react to changes in the validation state of the form.  The callback will be passed a boolean that is `true` when the form becomes valid.
 
 #### Properties passed to wrapped components
 

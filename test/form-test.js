@@ -145,8 +145,12 @@ describe('form', () => {
     describe('isValid', () => {
       describe('when there are errors', () => {
         beforeEach(() => {
+          props = {
+            value: {
+              field: '',
+            },
+          };
           render();
-          instance.errors = {field: 'error'};
         });
 
         it('returns false', () => {
@@ -156,8 +160,12 @@ describe('form', () => {
 
       describe('when there are no errors', () => {
         beforeEach(() => {
+          props = {
+            value: {
+              field: 'valid',
+            },
+          };
           render();
-          instance.errors = {};
         });
 
         it('returns true', () => {
@@ -224,6 +232,56 @@ describe('form', () => {
 
         it('calls the onChange listener', () => {
           expect(props.onChange.calledWith({field: 'newValue'})).toEqual(true);
+        });
+      });
+    });
+  });
+
+  describe('props from parent', () => {
+    describe('onValidate', () => {
+      beforeEach(() => {
+        props = {
+          onValidate: spy(),
+        };
+      });
+
+      describe('when fields are valid', () => {
+        beforeEach(() => {
+          props = {
+            ...props,
+            value: {
+              field: 'valid',
+            },
+          };
+          render();
+        });
+
+        it('is called with true', () => {
+          expect(props.onValidate.calledWith(true)).toEqual(true);
+        });
+      });
+
+      describe('when fields are invalid', () => {
+        beforeEach(() => {
+          render();
+        });
+
+        it('is called with false', () => {
+          expect(props.onValidate.calledWith(false)).toEqual(true);
+        });
+      });
+
+      describe('when fields are invalid multiple times in a row', () => {
+        beforeEach(() => {
+          render();
+          props.value = {
+            field: 'INVALID',
+          };
+          update();
+        });
+
+        it('is called with false', () => {
+          expect(props.onValidate.calledOnce).toEqual(true);
         });
       });
     });

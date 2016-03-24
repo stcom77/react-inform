@@ -12,6 +12,7 @@ export default function form({fields, validate = () => ({})}) {
     static propTypes = {
       value: PropTypes.object,
       onChange: PropTypes.func,
+      onValidate: PropTypes.func,
     }
 
     constructor(props) {
@@ -19,8 +20,9 @@ export default function form({fields, validate = () => ({})}) {
       this.fields = this.createFields(fields);
       this.values = {};
       this.touched = {};
-      this.resolveErrors();
+      this.valid = undefined;
       if (props.value !== undefined) this.setEachValue(props.value);
+      else this.resolveErrors();
     }
 
     createFields(newFields) {
@@ -91,6 +93,11 @@ export default function form({fields, validate = () => ({})}) {
           this.fields[field].error = this.errors[field];
         }
       });
+      const valid = Object.keys(this.errors).length === 0;
+      if (this.valid !== valid) {
+        this.valid = valid;
+        if (this.props.onValidate) this.props.onValidate(this.valid);
+      }
     }
 
     blur(name) {
@@ -108,7 +115,7 @@ export default function form({fields, validate = () => ({})}) {
 
     formProps() {
       return {
-        isValid: () => Object.keys(this.errors).length === 0,
+        isValid: () => this.valid,
         forceValidate: () => {
           this.touchAll();
           this.flushChanges();
