@@ -15,120 +15,113 @@ export default function form({fields, validate = () => ({})}) {
       onValidate: PropTypes.func,
     }
 
-    constructor(props) {
-      super(props);
-      this.fields = this.createFields(fields);
-      this.values = {};
-      this.touched = {};
-      this.valid = undefined;
-      if (props.value !== undefined) this.setEachValue(props.value);
-      else this.resolveErrors();
+    state = {
+      touched: {},
+      errors: {},
+      valid: undefined,
     }
 
-    createFields(newFields) {
-      return newFields.reduce((acc, v) => ({...acc, [v]: this.createField(v)}), {});
+    componentWillMount() {
+      const values = this.props.value || {};
+      this.setState({ values });
+      this.handleValidate(values);
     }
 
-    createField(name) {
+    componentWillReceiveProps(nextProps) {
+      this.setValues(nextProps.value);
+    }
+
+    setValues(values) {
+      if (values === undefined) return;
+      this.setState({ values });
+      this.handleValidate(values);
+    }
+
+    setErrors(errors) {
+      const valid = Object.keys(errors).length === 0;
+      if (valid !== this.state.valid) {
+        this.setState({ valid });
+        if (this.props.onValidate) this.props.onValidate(valid);
+      }
+      this.setState({ errors });
+    }
+
+    handleValidate(values) {
+      const errors = validate(values);
+      if (errors.then instanceof Function) {
+        errors.then(errs => this.setErrors(errs));
+      } else {
+        this.setErrors(errors);
+      }
+    }
+
+    field(name) {
       return {
         onBlur: () => this.blur(name),
         onChange: e => this.handleChange(name, e),
-        value: undefined,
       };
     }
 
     handleChange(name, e) {
       const value = getValue(e);
-      const changed = this.setValues({...this.values, [name]: value});
-      if (changed) this.forceUpdate();
-    }
+      const values = {
+        ...this.state.values,
+        [name]: value,
+      };
 
-    pushChanges(data) {
-      if (this.props.onChange) this.props.onChange(data || this.values);
-    }
+      if (value === this.state.values[name]) return;
+      if (this.props.onChange) this.props.onChange(values);
+      if (this.props.value !== undefined) return;
 
-    setValue(name, value) {
-      if (this.values[name] === value) return false;
-      this.fields[name].value = value;
-      this.values[name] = value;
-      if (typeof value === 'boolean') this.fields[name].checked = value;
-      else delete this.fields[name].checked;
-      return true;
-    }
-
-    flushChanges() {
-      this.resolveErrors();
-      this.forceUpdate();
-    }
-
-    setEachValue(data) {
-      let changed = false;
-      fields.forEach(field => {
-        const prop = data[field];
-        changed = this.setValue(field, prop) || changed;
+      this.setState({
+        values,
       });
-      if (changed) this.resolveErrors();
-      return changed;
+      this.handleValidate(values);
     }
 
-    setValues(data) {
-      let changed = false;
-      if (this.props.value === undefined) {
-        changed = this.setEachValue(data);
-      }
-      this.pushChanges(data);
-      return changed;
-    }
+    touch(vals) {
+      const allTouched = vals.reduce((acc, name) => acc && this.state.touched[name], true);
+      if (allTouched) return;
 
-    componentWillReceiveProps(nextProps) {
-      if (nextProps.value !== undefined && this.props.value !== nextProps.value) {
-        this.setEachValue(nextProps.value);
-      }
-    }
-
-    resolveErrors() {
-      this.errors = validate(this.values);
-      fields.forEach(field => {
-        if (this.touched[field]) {
-          this.fields[field].error = this.errors[field];
-        }
-      });
-      const valid = Object.keys(this.errors).length === 0;
-      if (this.valid !== valid) {
-        this.valid = valid;
-        if (this.props.onValidate) this.props.onValidate(this.valid);
-      }
-    }
-
-    blur(name) {
-      if (!this.touched[name]) {
-        this.touched[name] = true;
-        this.flushChanges();
-      }
-    }
-
-    touchAll() {
-      fields.forEach(field => {
-        this.touched[field] = true;
-      });
+      this.setState({touched: {
+        ...this.state.touched,
+        ...vals.reduce((acc, name) => ({...acc, [name]: true}), {}),
+      }});
     }
 
     formProps() {
       return {
-        isValid: () => this.valid,
-        forceValidate: () => {
-          this.touchAll();
-          this.flushChanges();
+        isValid: () => this.state.valid,
+        forceValidate: () => this.touch(fields),
+        values: () => this.state.values,
+        onValues: values => {
+          if (!this.props.value) {
+            this.setState({ values });
+          }
+          if (this.props.onChange) this.props.onChange(values);
         },
-        values: () => this.values,
-        onValues: values => this.setValues(values),
       };
+    }
+
+    makeField(name) {
+      const { values, errors, touched } = this.state;
+      return {
+        onChange: e => this.handleChange(name, e),
+        onBlur: () => this.touch([name]),
+        value: values[name] || '',
+        error: touched[name] ? errors[name] : undefined,
+        checked: typeof values[name] === 'boolean' ? values[name] : undefined,
+      };
+    }
+
+    makeFields() {
+      return fields.reduce((acc, name) => ({...acc, [name]: this.makeField(name)}), {});
     }
 
     generatedProps() {
       return {
         form: this.formProps(),
-        fields: this.fields,
+        fields: this.makeFields(),
       };
     }
 
@@ -137,7 +130,7 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     render() {
-      return <Wrapped {...this.generatedProps()} {...this.props}/>;
+      return <Wrapped {...this.props} {...this.generatedProps()}/>;
     }
   };
 }

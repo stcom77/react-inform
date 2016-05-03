@@ -16,7 +16,6 @@ const validate = ({field}) => {
 class MyForm extends Component {
 }
 
-const WrappedForm = form({fields, validate})(MyForm);
 
 describe('form', () => {
   let props;
@@ -25,8 +24,10 @@ describe('form', () => {
   let renderer;
   let output;
   let instance;
+  let WrappedForm;
 
   beforeEach(() => {
+    WrappedForm = form({fields, validate})(MyForm);
     props = {foo: 'bar'};
     update = () => {
       renderer.render(<WrappedForm {...props} />);
@@ -107,8 +108,34 @@ describe('form', () => {
           });
 
           it('removes the checked property', () => {
-            expect(output.props.fields.field.hasOwnProperty('checked')).toEqual(false);
+            expect(output.props.fields.field.checked).toEqual(undefined);
           });
+        });
+      });
+    });
+
+    describe('asyncValidation', () => {
+      describe('when the value is invalid', () => {
+        beforeEach(() => {
+          return new Promise(resolve => {
+            function asyncValidate(values) {
+              const errors = validate(values);
+              return Promise.resolve(errors).then(err => {
+                process.nextTick(() => {
+                  update();
+                  resolve();
+                });
+                return err;
+              });
+            }
+            WrappedForm = form({fields, validate: asyncValidate})(MyForm);
+            render();
+            output.props.fields.field.onBlur();
+          });
+        });
+
+        it('passes down the error property', () => {
+          expect(output.props.fields.field.error).toEqual('REQUIRED');
         });
       });
     });
@@ -129,7 +156,7 @@ describe('form', () => {
       describe('when the value is valid', () => {
         beforeEach(() => {
           render();
-          instance.values.field = 'valid';
+          instance.setValues({ field: 'valid' });
           output.props.fields.field.onBlur();
           update();
         });
