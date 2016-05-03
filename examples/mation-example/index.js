@@ -1,5 +1,5 @@
 import './index.css';
-import './foundation.css';
+import '../foundation.css';
 
 import React, { Component } from 'react';
 import TextArea from 'react-textarea-autosize';
