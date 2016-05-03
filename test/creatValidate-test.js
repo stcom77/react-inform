@@ -31,6 +31,39 @@ describe('createValidate', () => {
     });
   });
 
+  describe('when rule is async', () => {
+    const rulesMap = {
+      field: {
+        'is not valid': value => Promise.resolve(value !== 'INVALID'),
+      },
+    };
+    const validate = createValidate(rulesMap);
+
+    describe('when the field is invalid', () => {
+      const object = {
+        field: 'INVALID',
+      };
+
+      it('returns an error for the field', () => {
+        return validate(object).then(errors => {
+          expect(errors.field).toEqual('is not valid');
+        });
+      });
+    });
+
+    describe('when the field is valid', () => {
+      const object = {
+        field: 'VALID',
+      };
+
+      it('returns no errors', () => {
+        return validate(object).then(errors => {
+          expect(errors).toEqual({});
+        });
+      });
+    });
+  });
+
   describe('when given a rule involving other fields', () => {
     const rulesMap = {
       field: {
