@@ -130,7 +130,8 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     render() {
-      return <Wrapped {...this.props} {...this.generatedProps()}/>;
+      const { value, onChange, onValidate, ...otherProps } = this.props;
+      return <Wrapped {...otherProps} {...this.generatedProps()}/>;
     }
   };
 }
