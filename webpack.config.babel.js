@@ -1,19 +1,17 @@
-'use strict';
+import webpack from 'webpack';
 
-var webpack = require('webpack');
-
-var reactExternal = {
+const reactExternal = {
   root: 'React',
   commonjs2: 'react',
   commonjs: 'react',
-  amd: 'react'
+  amd: 'react',
 };
 
-var plugins = [
+const plugins = [
   new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
-  new webpack.optimize.OccurenceOrderPlugin()
+  new webpack.optimize.OccurenceOrderPlugin(),
 ];
 
 if (process.env.NODE_ENV === 'production') {
@@ -21,27 +19,27 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         screw_ie8: true,
-        warnings: false
-      }
-    })
+        warnings: false,
+      },
+    }),
   );
 }
 
 module.exports = {
   module: {
     loaders: [
-      {test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/}
-    ]
+      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ },
+    ],
   },
   output: {
     library: 'reactInform',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
   },
   externals: {
     react: reactExternal,
   },
-  plugins: plugins,
+  plugins,
   resolve: {
-    extensions: ['', '.js']
-  }
+    extensions: ['', '.js'],
+  },
 };

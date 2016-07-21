@@ -15,6 +15,10 @@ export default class ResetFormButton extends Component {
   }
 
   render() {
-    return <button {...this.props} onClick={e => this.handleClick(e)}>{this.props.children || 'Reset'}</button>;
+    return (
+      <button {...this.props} onClick={e => this.handleClick(e)}>
+        {this.props.children || 'Reset'}
+      </button>
+    );
   }
 }

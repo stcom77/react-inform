@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import getValue from './getValue';
 
-export default function form({fields, validate = () => ({})}) {
+export default function form({ fields, validate = () => ({}) }) {
   return (Wrapped) => class FormWrapper extends Component {
     static childContextTypes = {
       form: PropTypes.object,
@@ -83,10 +83,10 @@ export default function form({fields, validate = () => ({})}) {
       const allTouched = vals.reduce((acc, name) => acc && this.state.touched[name], true);
       if (allTouched) return;
 
-      this.setState({touched: {
+      this.setState({ touched: {
         ...this.state.touched,
-        ...vals.reduce((acc, name) => ({...acc, [name]: true}), {}),
-      }});
+        ...vals.reduce((acc, name) => ({ ...acc, [name]: true }), {}),
+      } });
     }
 
     formProps() {
@@ -116,7 +116,7 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     makeFields() {
-      return fields.reduce((acc, name) => ({...acc, [name]: this.makeField(name)}), {});
+      return fields.reduce((acc, name) => ({ ...acc, [name]: this.makeField(name) }), {});
     }
 
     generatedProps() {
@@ -131,8 +131,9 @@ export default function form({fields, validate = () => ({})}) {
     }
 
     render() {
+      // eslint-disable-next-line no-unused-vars
       const { value, onChange, onValidate, ...otherProps } = this.props;
-      return <Wrapped {...otherProps} {...this.generatedProps()}/>;
+      return <Wrapped {...otherProps} {...this.generatedProps()} />;
     }
   };
 }

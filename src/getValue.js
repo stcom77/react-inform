@@ -13,9 +13,9 @@ const getSelectedValues = options => {
 
 const isEvent = candidate => !!(candidate && candidate.stopPropagation && candidate.preventDefault);
 
-export default function(event) {
+export default function getValue(event) {
   if (isEvent(event)) {
-    const {target: {type, value, checked, files}, dataTransfer} = event;
+    const { target: { type, value, checked, files }, dataTransfer } = event;
     if (type === 'checkbox') {
       return checked;
     }

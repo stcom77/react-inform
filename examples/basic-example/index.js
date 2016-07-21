@@ -16,7 +16,7 @@ import {
 
 alertify.logPosition('top right');
 
-function LabeledInput({text, error, ...rest}) {
+function LabeledInput({ text, error, ...rest }) {
   let htmlFor = undefined;
   if (rest.id) {
     htmlFor = rest.id;
@@ -47,7 +47,7 @@ const rulesMap = {
     'Password is required': isRequired,
   },
   confirmPassword: {
-    'Passwords must match': (value, {password}) => value === password,
+    'Passwords must match': (value, { password }) => value === password,
   },
 };
 
@@ -63,17 +63,26 @@ class MyForm extends Component {
     return (
       <form onSubmit={e => this.handleSubmit(e)}>
         <label htmlFor="check-b">
-          <input type="checkbox" id="check-b" name="check-b" {...checkbox}/>
+          <input type="checkbox" id="check-b" name="check-b" {...checkbox} />
           Checkbox Just For Fun
           <span className="ui-hint">{checkbox.error}</span>
         </label>
         <LabeledInput text="Username" id="username" {...username} />
         <LabeledInput text="Email" id="email" {...email} />
         <LabeledInput type="password" text="Password" id="password" {...password} />
-        <LabeledInput type="password" text="Confirm Password" id="confirmPassword" {...confirmPassword} />
-        <DisabledFormSubmit className="button" value="I am enabled when valid!"/>
-        <FeedbackFormSubmit className="button" value="I will reveal errors!" onInvalid={() => alertify.error('Please fix errors!')}/>
-        <ResetFormButton className="alert button"/>
+        <LabeledInput
+          type="password"
+          text="Confirm Password"
+          id="confirmPassword"
+          {...confirmPassword}
+        />
+        <DisabledFormSubmit className="button" value="I am enabled when valid!" />
+        <FeedbackFormSubmit
+          className="button"
+          value="I will reveal errors!"
+          onInvalid={() => alertify.error('Please fix errors!')}
+        />
+        <ResetFormButton className="alert button" />
       </form>
     );
   }
@@ -89,16 +98,16 @@ class App extends Component {
   };
 
   setValue(value) {
-    this.setState({value, typedValue: undefined});
+    this.setState({ value, typedValue: undefined });
   }
 
   handleChange(e) {
     const { value } = e.target;
-    this.setState({typedValue: value});
+    this.setState({ typedValue: value });
 
     try {
       const objValue = JSON.parse(value);
-      this.setState({value: objValue});
+      this.setState({ value: objValue });
     } catch (error) {
       // do nothing
     }
@@ -109,13 +118,17 @@ class App extends Component {
     return (
       <div>
         <div className="panel callout">
-          <MyForm onChange={v=> this.setValue(v)} value={value}/>
+          <MyForm onChange={v => this.setValue(v)} value={value} />
         </div>
         <small>Try editing this</small>
-        <TextArea useCacheForDOMMeasurements value={typedValue || JSON.stringify(value, null, ' ')} onChange={e => this.handleChange(e)}/>
+        <TextArea
+          useCacheForDOMMeasurements
+          value={typedValue || JSON.stringify(value, null, ' ')}
+          onChange={e => this.handleChange(e)}
+        />
       </div>
     );
   }
 }
 
-render(<App/>, document.getElementById('container'));
+render(<App />, document.getElementById('container'));
