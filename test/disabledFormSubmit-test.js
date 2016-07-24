@@ -1,26 +1,17 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import React from 'react';
-import { createRenderer } from 'react-addons-test-utils';
+import { mount } from 'enzyme';
 
 import DisabledFormSubmit from '../src/disabledFormSubmit';
 
 describe('DisabledFormSubmit', () => {
+  let props;
   let context;
-  const extraProps = {
-    foo: 'bar',
-  };
-  let output;
-  let render;
+  const render = () => mount(<DisabledFormSubmit {...props} />, { context });
 
   beforeEach(() => {
-    const renderer = createRenderer();
-    render = () => {
-      renderer.render(
-        <DisabledFormSubmit
-          {...extraProps} />,
-          context
-      );
-      output = renderer.getRenderOutput();
+    props = {
+      foo: 'bar',
     };
   });
 
@@ -31,19 +22,18 @@ describe('DisabledFormSubmit', () => {
           isValid: () => true,
         },
       };
-      render();
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(render().find('input').name()).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(render().find('input').props().foo).to.equal('bar');
     });
 
     it('is enabled', () => {
-      expect(output.props.disabled).toEqual(false);
+      expect(render().find('input').props().disabled).to.equal(false);
     });
   });
 
@@ -54,19 +44,18 @@ describe('DisabledFormSubmit', () => {
           isValid: () => false,
         },
       };
-      render();
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(render().find('input').name()).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(render().find('input').props().foo).to.equal('bar');
     });
 
     it('is disabled', () => {
-      expect(output.props.disabled).toEqual(true);
+      expect(render().find('input').props().disabled).to.equal(true);
     });
   });
 });

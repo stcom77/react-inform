@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 
 import getValue from '../src/getValue';
 
@@ -10,7 +10,7 @@ describe('getValue', () => {
       };
 
       it('returns the event\'s value', () => {
-        expect(getValue(event)).toEqual('event value');
+        expect(getValue(event)).to.equal('event value');
       });
     });
 
@@ -18,7 +18,7 @@ describe('getValue', () => {
       const event = 'event value';
 
       it('returns the event\'s value', () => {
-        expect(getValue(event)).toEqual('event value');
+        expect(getValue(event)).to.equal('event value');
       });
     });
   });
@@ -27,10 +27,10 @@ describe('getValue', () => {
     const eventStarter = { stopPropagation: true, preventDefault: true };
 
     describe('when the event is a checkbox event', () => {
-      const event = {...eventStarter, target: { type: 'checkbox', checked: true } };
+      const event = { ...eventStarter, target: { type: 'checkbox', checked: true } };
 
       it('returns the checked property', () => {
-        expect(getValue(event)).toEqual(true);
+        expect(getValue(event)).to.equal(true);
       });
     });
 
@@ -42,7 +42,7 @@ describe('getValue', () => {
       };
 
       it('returns the checked property', () => {
-        expect(getValue(event)).toEqual('event value');
+        expect(getValue(event)).to.equal('event value');
       });
     });
 
@@ -52,15 +52,15 @@ describe('getValue', () => {
         target: {
           type: 'select-multiple',
           options: [
-            {value: 'event', selected: true},
-            {value: 'bad', selected: false},
-            {value: 'value', selected: true},
+            { value: 'event', selected: true },
+            { value: 'bad', selected: false },
+            { value: 'value', selected: true },
           ],
         },
       };
 
       it('returns the selected options', () => {
-        expect(getValue(event)).toEqual(['event', 'value']);
+        expect(getValue(event)).to.deep.equal(['event', 'value']);
       });
     });
 
@@ -71,7 +71,7 @@ describe('getValue', () => {
       };
 
       it('returns the value property', () => {
-        expect(getValue(event)).toEqual('event value');
+        expect(getValue(event)).to.equal('event value');
       });
     });
   });

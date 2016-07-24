@@ -1,84 +1,64 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import React from 'react';
-import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
+import { mount } from 'enzyme';
 
 import ResetFormButton from '../src/resetFormButton';
 
 describe('ResetFormButton', () => {
   let context;
-  let extraProps;
-  let output;
-  let render;
+  let props;
+  const render = () => mount(<ResetFormButton {...props} />, { context });
 
   beforeEach(() => {
-    context = {
-      form: {},
-    };
-    extraProps = {
+    props = {
       foo: 'bar',
     };
-    const renderer = createRenderer();
-    render = () => {
-      renderer.render(
-        <ResetFormButton
-          {...extraProps} />,
-          context
-      );
-      output = renderer.getRenderOutput();
-    };
+    context = { form: {} };
   });
 
   describe('when a child is passed', () => {
     beforeEach(() => {
-      extraProps = {...extraProps, children: 'Test'};
-      render();
+      props = { ...props, children: 'Test' };
     });
 
     it('renders a button', () => {
-      expect(output.type).toEqual('button');
+      expect(render().find('button').name()).to.equal('button');
     });
 
     it('its children is the passed child', () => {
-      expect(output.props.children).toEqual('Test');
+      expect(render().text()).to.equal('Test');
     });
   });
 
   describe('when no child is passed', () => {
-    beforeEach(() => {
-      render();
-    });
-
     it('renders a button', () => {
-      expect(output.type).toEqual('button');
+      expect(render().find('button').name()).to.equal('button');
     });
 
     it('its child is the text "Reset"', () => {
-      expect(output.props.children).toEqual('Reset');
+      expect(render().text()).to.equal('Reset');
     });
   });
 
   describe('when the button is clicked', () => {
-    let event;
+    const clicked = () => {
+      const comp = render();
+      comp.simulate('click');
+      return comp;
+    };
+
     beforeEach(() => {
       context = {
         form: {
           onValues: spy(),
         },
       };
-      render();
-      event = {
-        preventDefault: spy(),
-      };
-      output.props.onClick(event);
-    });
-
-    it('calls preventDefault', () => {
-      expect(event.preventDefault.called).toEqual(true);
     });
 
     it('calls the forms onValues with an empty array', () => {
-      expect(context.form.onValues.calledWith({})).toEqual(true);
+      clicked();
+      expect(context.form.onValues.calledWith({})).to.equal(true);
     });
   });
 });
