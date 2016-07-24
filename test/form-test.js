@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import React from 'react';
-import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
+import { mount } from 'enzyme';
 
 import form from '../src/form';
 
@@ -13,103 +13,92 @@ const validate = ({ field }) => {
   return errors;
 };
 
-function MyForm() {
+function MyForm({ fields: formFields }) {
+  return (
+    <div>
+      <input type="text" {...formFields.field} />
+      <span>{formFields.field.error}</span>
+    </div>
+  );
 }
 
 
 describe('form', () => {
   let props;
-  let render;
-  let update;
-  let renderer;
-  let output;
-  let instance;
   let WrappedForm;
+  const render = () => mount(<WrappedForm {...props} />);
 
   beforeEach(() => {
     WrappedForm = form({ fields, validate })(MyForm);
     props = { foo: 'bar' };
-    update = () => {
-      renderer.render(<WrappedForm {...props} />);
-      output = renderer.getRenderOutput();
-      // eslint-disable-next-line no-underscore-dangle
-      instance = renderer._instance._instance;
-    };
-    render = () => {
-      renderer = createRenderer();
-      update();
-    };
   });
 
-  describe('when rendered', () => {
-    beforeEach(() => {
-      render();
-    });
+  it('renders the underlying class', () => {
+    expect(render().find(MyForm).length).to.equal(1);
+  });
 
-    it('renders the underlying class', () => {
-      expect(output.type).to.equal(MyForm);
-    });
+  it('passes extra props through', () => {
+    expect(render().find(MyForm).props().foo).to.equal('bar');
+  });
 
-    it('passes extra props through', () => {
-      expect(output.props.foo).to.equal('bar');
-    });
-
-    it('does not pass errors before change / blur', () => {
-      expect(output.props.fields.field.error).to.equal(undefined);
-    });
+  it('does not pass errors before change / blur', () => {
+    expect(render().find('span').text()).to.equal('');
   });
 
   describe('fields', () => {
     describe('onChange', () => {
       describe('when there is not a value prop', () => {
-        beforeEach(() => {
-          render();
-          output.props.fields.field.onChange('newValue');
-          update();
-        });
+        const change = () => {
+          const comp = render();
+          comp.find(MyForm).props().fields.field.onChange('newValue');
+          return comp;
+        };
 
         it('changes the value prop', () => {
-          expect(output.props.fields.field.value).to.equal('newValue');
+          expect(change().find(MyForm).props().fields.field.value).to.equal('newValue');
         });
       });
 
       describe('when there is a value prop', () => {
+        const change = () => {
+          const comp = render();
+          comp.find(MyForm).props().fields.field.onChange('newValue');
+          return comp;
+        };
+
         beforeEach(() => {
           props = {
             value: {
               field: 'staticValue',
             },
           };
-          render();
-          output.props.fields.field.onChange('newValue');
-          update();
         });
 
         it('does not change the value prop', () => {
-          expect(output.props.fields.field.value).to.equal('staticValue');
+          expect(change().find(MyForm).props().fields.field.value).to.equal('staticValue');
         });
       });
 
       describe('when changed to a boolean value', () => {
-        beforeEach(() => {
-          render();
-          output.props.fields.field.onChange(true);
-          update();
-        });
+        const change = () => {
+          const comp = render();
+          comp.find(MyForm).props().fields.field.onChange(true);
+          return comp;
+        };
 
         it('passes the checked property', () => {
-          expect(output.props.fields.field.checked).to.equal(true);
+          expect(change().find(MyForm).props().fields.field.checked).to.equal(true);
         });
 
         describe('when changed to a string later', () => {
-          beforeEach(() => {
-            render();
-            output.props.fields.field.onChange('anything');
-            update();
-          });
+          const backToString = () => {
+            const comp = change();
+            comp.find(MyForm).props().fields.field.onChange('anything');
+            return comp;
+          };
 
           it('removes the checked property', () => {
-            expect(output.props.fields.field.checked).to.equal(undefined);
+            expect(backToString().find(MyForm).props().fields.field.checked).to.equal(undefined);
           });
         });
       });
@@ -117,53 +106,50 @@ describe('form', () => {
 
     describe('asyncValidation', () => {
       describe('when the value is invalid', () => {
-        beforeEach(() =>
-          new Promise(resolve => {
-            function asyncValidate(values) {
-              const errors = validate(values);
-              return Promise.resolve(errors).then(err => {
-                process.nextTick(() => {
-                  update();
-                  resolve();
-                });
-                return err;
-              });
-            }
-            WrappedForm = form({ fields, validate: asyncValidate })(MyForm);
-            render();
-            output.props.fields.field.onBlur();
+        const asyncChange = () => {
+          const comp = render();
+          comp.find('input').simulate('blur');
+          return Promise.resolve(comp);
+        };
+        beforeEach(() => {
+          function asyncValidate(values) {
+            const errors = validate(values);
+            return Promise.resolve(errors);
+          }
+          WrappedForm = form({ fields, validate: asyncValidate })(MyForm);
+        });
+
+        it('passes down the error property', () =>
+          asyncChange().then(comp => {
+            expect(comp.find('span').text()).to.equal('REQUIRED');
           })
         );
-
-        it('passes down the error property', () => {
-          expect(output.props.fields.field.error).to.equal('REQUIRED');
-        });
       });
     });
 
     describe('onBlur', () => {
       describe('when the value is invalid', () => {
-        beforeEach(() => {
-          render();
-          output.props.fields.field.onBlur();
-          update();
-        });
+        const blur = () => {
+          const comp = render();
+          comp.find('input').simulate('blur');
+          return comp;
+        };
 
         it('passes down the error property', () => {
-          expect(output.props.fields.field.error).to.equal('REQUIRED');
+          expect(blur().find('span').text()).to.equal('REQUIRED');
         });
       });
 
       describe('when the value is valid', () => {
-        beforeEach(() => {
-          render();
-          instance.setValues({ field: 'valid' });
-          output.props.fields.field.onBlur();
-          update();
-        });
+        const blur = () => {
+          const comp = render();
+          comp.instance().setValues({ field: 'valid' });
+          comp.find('input').simulate('blur');
+          return comp;
+        };
 
         it('passes down the error property', () => {
-          expect(output.props.fields.field.error).to.equal(undefined);
+          expect(blur().find('span').text()).to.equal('');
         });
       });
     });
@@ -178,11 +164,10 @@ describe('form', () => {
               field: '',
             },
           };
-          render();
         });
 
         it('returns false', () => {
-          expect(output.props.form.isValid()).to.equal(false);
+          expect(render().find(MyForm).props().form.isValid()).to.equal(false);
         });
       });
 
@@ -193,96 +178,108 @@ describe('form', () => {
               field: 'valid',
             },
           };
-          render();
         });
 
         it('returns true', () => {
-          expect(output.props.form.isValid()).to.equal(true);
+          expect(render().find(MyForm).props().form.isValid()).to.equal(true);
         });
       });
     });
 
     describe('forceValidate', () => {
       describe('when the field is invalid', () => {
-        beforeEach(() => {
-          render();
-          output.props.form.forceValidate();
-          update();
-        });
+        const force = () => {
+          const comp = render();
+          comp.find(MyForm).props().form.forceValidate();
+          return comp;
+        };
 
         it('returns false', () => {
-          expect(output.props.fields.field.error).to.equal('REQUIRED');
+          expect(force().find('span').text()).to.equal('REQUIRED');
         });
       });
     });
 
     describe('values', () => {
-      beforeEach(() => {
-        render();
-        output.props.fields.field.onChange('test');
-        update();
-      });
+      const change = () => {
+        const comp = render();
+        comp.find(MyForm).props().fields.field.onChange('test');
+        return comp;
+      };
 
       it('returns the values', () => {
-        expect(output.props.form.values()).to.deep.equal({ field: 'test' });
+        expect(change().find(MyForm).props().form.values()).to.deep.equal({ field: 'test' });
       });
     });
 
     describe('onValues', () => {
       describe('when there is no value prop', () => {
+        const onValues = () => {
+          const comp = render();
+          comp.find(MyForm).props().form.onValues({ field: 'INVALID' });
+          return comp;
+        };
+
         beforeEach(() => {
           props = {
             onChange: spy(),
           };
-          render();
-
-          output.props.form.onValues({ field: 'INVALID' });
-          update();
         });
 
         it('calls the onChange listener', () => {
+          onValues();
           expect(props.onChange.calledOnce).to.equal(true);
           expect(props.onChange.calledWith({ field: 'INVALID' })).to.equal(true);
         });
 
         it('changes the values', () => {
-          expect(output.props.form.values()).to.deep.equal({ field: 'INVALID' });
+          expect(onValues().find(MyForm).props().form.values()).to.deep.equal({ field: 'INVALID' });
         });
 
         it('detects invalid form state', () => {
-          expect(output.props.form.isValid()).to.equal(false);
+          expect(onValues().find(MyForm).props().form.isValid()).to.equal(false);
         });
 
         describe('when there is a value already set by onValues()', () => {
+          const changes = () => {
+            const comp = onValues();
+            comp.find(MyForm).props().form.onValues({ field: 'VALID' });
+            return comp;
+          };
+
           beforeEach(() => {
             props = {
               onChange: spy(),
             };
-            render();
-
-            output.props.form.onValues({ field: 'VALID' });
-            update();
-            output.props.form.onValues({ field: 'INVALID' });
-            update();
           });
 
           it('calls the onChange listener', () => {
+            changes();
             expect(props.onChange.calledTwice).to.equal(true);
-            expect(props.onChange.firstCall.calledWith({ field: 'VALID' })).to.equal(true);
-            expect(props.onChange.secondCall.calledWith({ field: 'INVALID' })).to.equal(true);
+            expect(props.onChange.firstCall.calledWith({ field: 'INVALID' })).to.equal(true);
+            expect(props.onChange.secondCall.calledWith({ field: 'VALID' })).to.equal(true);
           });
 
           it('changes the values', () => {
-            expect(output.props.form.values()).to.deep.equal({ field: 'INVALID' });
+            expect(changes().find(MyForm).props().form.values())
+              .to
+              .deep
+              .equal({ field: 'VALID' });
           });
 
-          it('detects invalid form state', () => {
-            expect(output.props.form.isValid()).to.equal(false);
+          it('detects valid form state', () => {
+            expect(changes().find(MyForm).props().form.isValid()).to.equal(true);
           });
         });
       });
 
       describe('when there is a value prop', () => {
+        const values = () => {
+          const comp = render();
+          comp.find(MyForm).props().form.onValues({ field: 'VALID' });
+          return comp;
+        };
+
         beforeEach(() => {
           props = {
             value: {
@@ -290,16 +287,17 @@ describe('form', () => {
             },
             onChange: spy(),
           };
-          render();
-          output.props.form.onValues({ field: 'VALID' });
-          update();
         });
 
         it('does not change the values', () => {
-          expect(output.props.form.values()).to.deep.equal({ field: 'staticValue' });
+          expect(values().find(MyForm).props().form.values())
+            .to
+            .deep
+            .equal({ field: 'staticValue' });
         });
 
         it('calls the onChange listener', () => {
+          values();
           expect(props.onChange.calledOnce).to.equal(true);
           expect(props.onChange.calledWith({ field: 'VALID' })).to.equal(true);
         });
@@ -323,34 +321,33 @@ describe('form', () => {
               field: 'valid',
             },
           };
-          render();
         });
 
         it('is called with true', () => {
+          render();
+          expect(props.onValidate.calledOnce).to.equal(true);
           expect(props.onValidate.calledWith(true)).to.equal(true);
         });
       });
 
       describe('when fields are invalid', () => {
-        beforeEach(() => {
-          render();
-        });
-
         it('is called with false', () => {
+          render();
+          expect(props.onValidate.calledOnce).to.equal(true);
           expect(props.onValidate.calledWith(false)).to.equal(true);
         });
       });
 
       describe('when fields are invalid multiple times in a row', () => {
-        beforeEach(() => {
-          render();
-          props.value = {
-            field: 'INVALID',
-          };
-          update();
-        });
+        const invalidAgain = () => {
+          const comp = render();
+          comp.setProps({ value: { field: 'INVALID' } });
+          return comp;
+        };
 
-        it('is called with false', () => {
+        it('is called once with false', () => {
+          invalidAgain();
+          expect(props.onValidate.calledWith(false)).to.equal(true);
           expect(props.onValidate.calledOnce).to.equal(true);
         });
       });
