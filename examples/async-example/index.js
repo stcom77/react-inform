@@ -4,6 +4,7 @@ import '../foundation.css';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import alertify from 'alertify.js';
+
 import {
   form,
   from,
@@ -12,7 +13,7 @@ import {
 
 alertify.logPosition('top right');
 
-function LabeledInput({text, error, ...rest}) {
+function LabeledInput({ text, error, ...rest }) {
   let htmlFor = undefined;
   if (rest.id) {
     htmlFor = rest.id;
@@ -32,17 +33,17 @@ function validateUsernameAsync(username) {
 
 @form(from({
   username: {
-    "Username is required": Boolean,
-    "Username must longer than 3 characters (async)": validateUsernameAsync,
+    'Username is required': Boolean,
+    'Username must longer than 3 characters (async)': validateUsernameAsync,
   },
   password: {
-    "Password is required": Boolean,
+    'Password is required': Boolean,
   },
 }))
 class MyForm extends Component {
   handleSubmit(e) {
     e.preventDefault();
-    alertify.success("Yay, it submitted");
+    alertify.success('Yay, it submitted');
   }
 
   render() {
@@ -50,25 +51,27 @@ class MyForm extends Component {
 
     return (
       <form onSubmit={e => this.handleSubmit(e)}>
-        <LabeledInput text="Username" id="username" {...username}/>
-        <LabeledInput text="Password" id="password" {...password}/>
-        <FeedbackFormSubmit className="button" value="I will reveal errors!" onInvalid={() => alertify.error('Please fix errors!')}/>
+        <LabeledInput text="Username" id="username" {...username} />
+        <LabeledInput text="Password" id="password" {...password} />
+        <FeedbackFormSubmit
+          className="button"
+          value="I will reveal errors!"
+          onInvalid={() => alertify.error('Please fix errors!')}
+        />
       </form>
     );
   }
 }
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <div className="panel callout">
-          <MyForm />
-        </div>
-        <small></small>
+function App() {
+  return (
+    <div>
+      <div className="panel callout">
+        <MyForm />
       </div>
-    );
-  }
+      <small></small>
+    </div>
+  );
 }
 
-render(<App/>, document.getElementById('container'));
+render(<App />, document.getElementById('container'));

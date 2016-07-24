@@ -20,6 +20,8 @@ export default class FeedbackFormSubmit extends Component {
   }
 
   render() {
-    return <input type="submit" {...this.props} onClick={e => this.handleClick(e)}/>;
+    return (
+      <input type="submit" {...this.props} onClick={e => this.handleClick(e)} />
+    );
   }
 }

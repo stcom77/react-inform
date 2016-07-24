@@ -33,7 +33,7 @@ Creating a [simple validating form](https://jsfiddle.net/theadam/Lc3nkx7g/3/embe
 
 We can configure a simple form that has the fields `username`, `password`, and `confirmPassword`.  This form will just validate that the `username` and `password` exist and that `confirmPassword` matches the password.  First just create the fields and validate function.  There is a helper function to aid in creating these validate functions, but for now, we will write one out by hand to get the hang of it.
 
-```js
+```jsx
 const fields = ['username', 'password', 'confirmPassword'];
 
 const validate = values => {
@@ -50,7 +50,7 @@ const validate = values => {
 
 Now that you have the fields and validate function, you can just use the form decorator:
 
-```js
+```jsx
 import { form } from 'react-inform';
 
 @form({
@@ -63,7 +63,7 @@ class MyForm extends Component {
 
 Or you can use form as a function.
 
-```js
+```jsx
 class MyForm extends Component {
   ...
 }
@@ -76,7 +76,7 @@ MyForm = form({
 
 The form function wraps your react component passing a `form` and `fields` property.  The `fields` property can be "plugged into" regular inputs in your render function.  The fields also willl have errors if your validate function returned any!
 
-```js
+```jsx
 <input type="text" placeholder="Username" {...username}/>
 <span>{username.error}</span>
 <input type="password" placeholder="Password" {...password}/>
@@ -122,7 +122,7 @@ A helper to create `validate` functions from maps of rules.  Rule functions can 
 
 This is an example rule map that ensures that username exists, password exists, and confirmPassword matches password.  Notice the keys to the rules are the error messages that will appear when the field is invalid.
 
-```js
+```jsx
 const exists = v => Boolean(v);
 
 const ruleMap = {

@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 
-export default class DisabledFormSubmit extends Component {
-  static contextTypes = {
-    form: PropTypes.object.isRequired,
-  }
-
-  render() {
-    return <input type="submit" disabled={!this.context.form.isValid()} {...this.props}/>;
-  }
+export default function DisabledFormSubmit(props, context) {
+  return (
+    <input type="submit" disabled={!context.form.isValid()} {...props} />
+  );
 }
+
+DisabledFormSubmit.contextTypes = {
+  form: PropTypes.object.isRequired,
+};

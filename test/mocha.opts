@@ -1,2 +1,2 @@
---compilers js:./test/babelCompiler
+--compilers js:babel-core/register
 --recursive
