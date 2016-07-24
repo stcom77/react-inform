@@ -1,19 +1,19 @@
-import expect from 'expect';
-import React, { Component } from 'react';
+import { expect } from 'chai';
+import React from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
 
 import form from '../src/form';
 
 const fields = ['field'];
-const validate = ({field}) => {
+const validate = ({ field }) => {
   const errors = {};
   if (!field) errors.field = 'REQUIRED';
   else if (field === 'INVALID') errors.field = 'FIELD INVALID';
   return errors;
 };
 
-class MyForm extends Component {
+function MyForm() {
 }
 
 
@@ -27,11 +27,12 @@ describe('form', () => {
   let WrappedForm;
 
   beforeEach(() => {
-    WrappedForm = form({fields, validate})(MyForm);
-    props = {foo: 'bar'};
+    WrappedForm = form({ fields, validate })(MyForm);
+    props = { foo: 'bar' };
     update = () => {
       renderer.render(<WrappedForm {...props} />);
       output = renderer.getRenderOutput();
+      // eslint-disable-next-line no-underscore-dangle
       instance = renderer._instance._instance;
     };
     render = () => {
@@ -46,15 +47,15 @@ describe('form', () => {
     });
 
     it('renders the underlying class', () => {
-      expect(output.type).toEqual(MyForm);
+      expect(output.type).to.equal(MyForm);
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(output.props.foo).to.equal('bar');
     });
 
     it('does not pass errors before change / blur', () => {
-      expect(output.props.fields.field.error).toEqual(undefined);
+      expect(output.props.fields.field.error).to.equal(undefined);
     });
   });
 
@@ -68,7 +69,7 @@ describe('form', () => {
         });
 
         it('changes the value prop', () => {
-          expect(output.props.fields.field.value).toEqual('newValue');
+          expect(output.props.fields.field.value).to.equal('newValue');
         });
       });
 
@@ -85,7 +86,7 @@ describe('form', () => {
         });
 
         it('does not change the value prop', () => {
-          expect(output.props.fields.field.value).toEqual('staticValue');
+          expect(output.props.fields.field.value).to.equal('staticValue');
         });
       });
 
@@ -97,7 +98,7 @@ describe('form', () => {
         });
 
         it('passes the checked property', () => {
-          expect(output.props.fields.field.checked).toEqual(true);
+          expect(output.props.fields.field.checked).to.equal(true);
         });
 
         describe('when changed to a string later', () => {
@@ -108,7 +109,7 @@ describe('form', () => {
           });
 
           it('removes the checked property', () => {
-            expect(output.props.fields.field.checked).toEqual(undefined);
+            expect(output.props.fields.field.checked).to.equal(undefined);
           });
         });
       });
@@ -116,8 +117,8 @@ describe('form', () => {
 
     describe('asyncValidation', () => {
       describe('when the value is invalid', () => {
-        beforeEach(() => {
-          return new Promise(resolve => {
+        beforeEach(() =>
+          new Promise(resolve => {
             function asyncValidate(values) {
               const errors = validate(values);
               return Promise.resolve(errors).then(err => {
@@ -128,14 +129,14 @@ describe('form', () => {
                 return err;
               });
             }
-            WrappedForm = form({fields, validate: asyncValidate})(MyForm);
+            WrappedForm = form({ fields, validate: asyncValidate })(MyForm);
             render();
             output.props.fields.field.onBlur();
-          });
-        });
+          })
+        );
 
         it('passes down the error property', () => {
-          expect(output.props.fields.field.error).toEqual('REQUIRED');
+          expect(output.props.fields.field.error).to.equal('REQUIRED');
         });
       });
     });
@@ -149,7 +150,7 @@ describe('form', () => {
         });
 
         it('passes down the error property', () => {
-          expect(output.props.fields.field.error).toEqual('REQUIRED');
+          expect(output.props.fields.field.error).to.equal('REQUIRED');
         });
       });
 
@@ -162,7 +163,7 @@ describe('form', () => {
         });
 
         it('passes down the error property', () => {
-          expect(output.props.fields.field.error).toEqual(undefined);
+          expect(output.props.fields.field.error).to.equal(undefined);
         });
       });
     });
@@ -181,7 +182,7 @@ describe('form', () => {
         });
 
         it('returns false', () => {
-          expect(output.props.form.isValid()).toEqual(false);
+          expect(output.props.form.isValid()).to.equal(false);
         });
       });
 
@@ -196,7 +197,7 @@ describe('form', () => {
         });
 
         it('returns true', () => {
-          expect(output.props.form.isValid()).toEqual(true);
+          expect(output.props.form.isValid()).to.equal(true);
         });
       });
     });
@@ -210,7 +211,7 @@ describe('form', () => {
         });
 
         it('returns false', () => {
-          expect(output.props.fields.field.error).toEqual('REQUIRED');
+          expect(output.props.fields.field.error).to.equal('REQUIRED');
         });
       });
     });
@@ -223,7 +224,7 @@ describe('form', () => {
       });
 
       it('returns the values', () => {
-        expect(output.props.form.values()).toEqual({field: 'test'});
+        expect(output.props.form.values()).to.deep.equal({ field: 'test' });
       });
     });
 
@@ -235,21 +236,21 @@ describe('form', () => {
           };
           render();
 
-          output.props.form.onValues({field: 'INVALID'});
+          output.props.form.onValues({ field: 'INVALID' });
           update();
         });
 
         it('calls the onChange listener', () => {
-          expect(props.onChange.calledOnce).toEqual(true);
-          expect(props.onChange.calledWith({field: 'INVALID'})).toEqual(true);
+          expect(props.onChange.calledOnce).to.equal(true);
+          expect(props.onChange.calledWith({ field: 'INVALID' })).to.equal(true);
         });
 
         it('changes the values', () => {
-          expect(output.props.form.values()).toEqual({field: 'INVALID'});
+          expect(output.props.form.values()).to.deep.equal({ field: 'INVALID' });
         });
 
         it('detects invalid form state', () => {
-          expect(output.props.form.isValid()).toEqual(false);
+          expect(output.props.form.isValid()).to.equal(false);
         });
 
         describe('when there is a value already set by onValues()', () => {
@@ -259,24 +260,24 @@ describe('form', () => {
             };
             render();
 
-            output.props.form.onValues({field: 'VALID'});
+            output.props.form.onValues({ field: 'VALID' });
             update();
-            output.props.form.onValues({field: 'INVALID'});
+            output.props.form.onValues({ field: 'INVALID' });
             update();
           });
 
           it('calls the onChange listener', () => {
-            expect(props.onChange.calledTwice).toEqual(true);
-            expect(props.onChange.firstCall.calledWith({field: 'VALID'})).toEqual(true);
-            expect(props.onChange.secondCall.calledWith({field: 'INVALID'})).toEqual(true);
+            expect(props.onChange.calledTwice).to.equal(true);
+            expect(props.onChange.firstCall.calledWith({ field: 'VALID' })).to.equal(true);
+            expect(props.onChange.secondCall.calledWith({ field: 'INVALID' })).to.equal(true);
           });
 
           it('changes the values', () => {
-            expect(output.props.form.values()).toEqual({field: 'INVALID'});
+            expect(output.props.form.values()).to.deep.equal({ field: 'INVALID' });
           });
 
           it('detects invalid form state', () => {
-            expect(output.props.form.isValid()).toEqual(false);
+            expect(output.props.form.isValid()).to.equal(false);
           });
         });
       });
@@ -290,17 +291,17 @@ describe('form', () => {
             onChange: spy(),
           };
           render();
-          output.props.form.onValues({field: 'VALID'});
+          output.props.form.onValues({ field: 'VALID' });
           update();
         });
 
         it('does not change the values', () => {
-          expect(output.props.form.values()).toEqual({field: 'staticValue'});
+          expect(output.props.form.values()).to.deep.equal({ field: 'staticValue' });
         });
 
         it('calls the onChange listener', () => {
-          expect(props.onChange.calledOnce).toEqual(true);
-          expect(props.onChange.calledWith({field: 'VALID'})).toEqual(true);
+          expect(props.onChange.calledOnce).to.equal(true);
+          expect(props.onChange.calledWith({ field: 'VALID' })).to.equal(true);
         });
       });
     });
@@ -326,7 +327,7 @@ describe('form', () => {
         });
 
         it('is called with true', () => {
-          expect(props.onValidate.calledWith(true)).toEqual(true);
+          expect(props.onValidate.calledWith(true)).to.equal(true);
         });
       });
 
@@ -336,7 +337,7 @@ describe('form', () => {
         });
 
         it('is called with false', () => {
-          expect(props.onValidate.calledWith(false)).toEqual(true);
+          expect(props.onValidate.calledWith(false)).to.equal(true);
         });
       });
 
@@ -350,7 +351,7 @@ describe('form', () => {
         });
 
         it('is called with false', () => {
-          expect(props.onValidate.calledOnce).toEqual(true);
+          expect(props.onValidate.calledOnce).to.equal(true);
         });
       });
     });

@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import React from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
@@ -21,9 +21,8 @@ describe('ResetFormButton', () => {
     const renderer = createRenderer();
     render = () => {
       renderer.render(
-        <ResetFormButton
-          {...extraProps} />,
-          context
+        <ResetFormButton {...extraProps} />,
+        context
       );
       output = renderer.getRenderOutput();
     };
@@ -31,16 +30,16 @@ describe('ResetFormButton', () => {
 
   describe('when a child is passed', () => {
     beforeEach(() => {
-      extraProps = {...extraProps, children: 'Test'};
+      extraProps = { ...extraProps, children: 'Test' };
       render();
     });
 
     it('renders a button', () => {
-      expect(output.type).toEqual('button');
+      expect(output.type).to.equal('button');
     });
 
     it('its children is the passed child', () => {
-      expect(output.props.children).toEqual('Test');
+      expect(output.props.children).to.equal('Test');
     });
   });
 
@@ -50,11 +49,11 @@ describe('ResetFormButton', () => {
     });
 
     it('renders a button', () => {
-      expect(output.type).toEqual('button');
+      expect(output.type).to.equal('button');
     });
 
     it('its child is the text "Reset"', () => {
-      expect(output.props.children).toEqual('Reset');
+      expect(output.props.children).to.equal('Reset');
     });
   });
 
@@ -74,11 +73,11 @@ describe('ResetFormButton', () => {
     });
 
     it('calls preventDefault', () => {
-      expect(event.preventDefault.called).toEqual(true);
+      expect(event.preventDefault.called).to.equal(true);
     });
 
     it('calls the forms onValues with an empty array', () => {
-      expect(context.form.onValues.calledWith({})).toEqual(true);
+      expect(context.form.onValues.calledWith({})).to.equal(true);
     });
   });
 });

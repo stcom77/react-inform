@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 
 import from from '../src/from';
 
@@ -7,7 +7,7 @@ describe('from', () => {
 
   describe('when passed a rule map with fields', () => {
     it('creates the fields property', () => {
-      expect(from(ruleMap).fields).toEqual(['a', 'b']);
+      expect(from(ruleMap).fields).to.deep.equal(['a', 'b']);
     });
   });
 
@@ -15,15 +15,15 @@ describe('from', () => {
     const output = 'VALIDATE OUTPUT';
 
     beforeEach(() => {
-      from.__Rewire__('createValidate', () => {
-        return output;
-      });
+      // eslint-disable-next-line no-underscore-dangle
+      from.__Rewire__('createValidate', () => output);
     });
 
+    // eslint-disable-next-line no-underscore-dangle
     afterEach(() => from.__ResetDependency__('createValidate'));
 
     it('creates a validate property', () => {
-      expect(from(ruleMap).validate).toEqual(output);
+      expect(from(ruleMap).validate).to.equal(output);
     });
   });
 });

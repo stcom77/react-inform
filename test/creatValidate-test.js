@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import createValidate from '../src/createValidate';
 
 describe('createValidate', () => {
@@ -16,7 +16,7 @@ describe('createValidate', () => {
       };
 
       it('returns an error for the field', () => {
-        expect(validate(object).field).toEqual('is not valid');
+        expect(validate(object).field).to.equal('is not valid');
       });
     });
 
@@ -26,7 +26,7 @@ describe('createValidate', () => {
       };
 
       it('returns no errors', () => {
-        expect(validate(object)).toEqual({});
+        expect(validate(object)).to.deep.equal({});
       });
     });
   });
@@ -44,11 +44,11 @@ describe('createValidate', () => {
         field: 'INVALID',
       };
 
-      it('returns an error for the field', () => {
-        return validate(object).then(errors => {
-          expect(errors.field).toEqual('is not valid');
-        });
-      });
+      it('returns an error for the field', () =>
+        validate(object).then(errors => {
+          expect(errors.field).to.equal('is not valid');
+        })
+      );
     });
 
     describe('when the field is valid', () => {
@@ -56,18 +56,18 @@ describe('createValidate', () => {
         field: 'VALID',
       };
 
-      it('returns no errors', () => {
-        return validate(object).then(errors => {
-          expect(errors).toEqual({});
-        });
-      });
+      it('returns no errors', () =>
+        validate(object).then(errors => {
+          expect(errors).to.deep.equal({});
+        })
+      );
     });
   });
 
   describe('when given a rule involving other fields', () => {
     const rulesMap = {
       field: {
-        'is not valid': (value, {field2}) => value === field2,
+        'is not valid': (value, { field2 }) => value === field2,
       },
     };
     const validate = createValidate(rulesMap);
@@ -79,7 +79,7 @@ describe('createValidate', () => {
       };
 
       it('returns an error for the field', () => {
-        expect(validate(object).field).toEqual('is not valid');
+        expect(validate(object).field).to.equal('is not valid');
       });
     });
 
@@ -90,7 +90,7 @@ describe('createValidate', () => {
       };
 
       it('returns no errors', () => {
-        expect(validate(object)).toEqual({});
+        expect(validate(object)).to.deep.equal({});
       });
     });
   });

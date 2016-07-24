@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import React from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { spy } from 'sinon';
@@ -19,9 +19,8 @@ describe('FeedbackFormSubmit', () => {
     const renderer = createRenderer();
     render = () => {
       renderer.render(
-        <FeedbackFormSubmit
-          {...extraProps} />,
-          context
+        <FeedbackFormSubmit {...extraProps} />,
+        context
       );
       output = renderer.getRenderOutput();
     };
@@ -39,11 +38,11 @@ describe('FeedbackFormSubmit', () => {
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(output.type).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(output.props.foo).to.equal('bar');
     });
 
     describe('when clicked', () => {
@@ -56,19 +55,19 @@ describe('FeedbackFormSubmit', () => {
       });
 
       it('does not call call preventDefault', () => {
-        expect(event.preventDefault.called).toEqual(false);
+        expect(event.preventDefault.called).to.equal(false);
       });
 
       it('does not call call forceValidate', () => {
-        expect(context.form.forceValidate.called).toEqual(false);
+        expect(context.form.forceValidate.called).to.equal(false);
       });
 
       it('calls the passed onClick handled', () => {
-        expect(extraProps.onClick.calledWith(event)).toEqual(true);
+        expect(extraProps.onClick.calledWith(event)).to.equal(true);
       });
 
       it('does not call the passed onInvalid handled', () => {
-        expect(extraProps.onInvalid.called).toEqual(false);
+        expect(extraProps.onInvalid.called).to.equal(false);
       });
     });
   });
@@ -85,11 +84,11 @@ describe('FeedbackFormSubmit', () => {
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(output.type).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(output.props.foo).to.equal('bar');
     });
 
     describe('when clicked', () => {
@@ -102,19 +101,19 @@ describe('FeedbackFormSubmit', () => {
       });
 
       it('calls preventDefault', () => {
-        expect(event.preventDefault.called).toEqual(true);
+        expect(event.preventDefault.called).to.equal(true);
       });
 
       it('calls forceValidate', () => {
-        expect(context.form.forceValidate.called).toEqual(true);
+        expect(context.form.forceValidate.called).to.equal(true);
       });
 
       it('calls the passed onClick handled', () => {
-        expect(extraProps.onClick.calledWith(event)).toEqual(true);
+        expect(extraProps.onClick.calledWith(event)).to.equal(true);
       });
 
       it('calls the passed onInvalid handled', () => {
-        expect(extraProps.onInvalid.calledWith(event)).toEqual(true);
+        expect(extraProps.onInvalid.calledWith(event)).to.equal(true);
       });
     });
   });

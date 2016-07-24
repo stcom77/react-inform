@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'chai';
 import React from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 
@@ -16,9 +16,8 @@ describe('DisabledFormSubmit', () => {
     const renderer = createRenderer();
     render = () => {
       renderer.render(
-        <DisabledFormSubmit
-          {...extraProps} />,
-          context
+        <DisabledFormSubmit {...extraProps} />,
+        context
       );
       output = renderer.getRenderOutput();
     };
@@ -35,15 +34,15 @@ describe('DisabledFormSubmit', () => {
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(output.type).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(output.props.foo).to.equal('bar');
     });
 
     it('is enabled', () => {
-      expect(output.props.disabled).toEqual(false);
+      expect(output.props.disabled).to.equal(false);
     });
   });
 
@@ -58,15 +57,15 @@ describe('DisabledFormSubmit', () => {
     });
 
     it('renders an input', () => {
-      expect(output.type).toEqual('input');
+      expect(output.type).to.equal('input');
     });
 
     it('passes extra props through', () => {
-      expect(output.props.foo).toEqual('bar');
+      expect(output.props.foo).to.equal('bar');
     });
 
     it('is disabled', () => {
-      expect(output.props.disabled).toEqual(true);
+      expect(output.props.disabled).to.equal(true);
     });
   });
 });
