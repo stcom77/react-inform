@@ -230,13 +230,54 @@ describe('form', () => {
     describe('onValues', () => {
       describe('when there is no value prop', () => {
         beforeEach(() => {
+          props = {
+            onChange: spy(),
+          };
           render();
-          output.props.form.onValues({field: 'newValue'});
+
+          output.props.form.onValues({field: 'INVALID'});
           update();
         });
 
+        it('calls the onChange listener', () => {
+          expect(props.onChange.calledOnce).toEqual(true);
+          expect(props.onChange.calledWith({field: 'INVALID'})).toEqual(true);
+        });
+
         it('changes the values', () => {
-          expect(output.props.form.values()).toEqual({field: 'newValue'});
+          expect(output.props.form.values()).toEqual({field: 'INVALID'});
+        });
+
+        it('detects invalid form state', () => {
+          expect(output.props.form.isValid()).toEqual(false);
+        });
+
+        describe('when there is a value already set by onValues()', () => {
+          beforeEach(() => {
+            props = {
+              onChange: spy(),
+            };
+            render();
+
+            output.props.form.onValues({field: 'VALID'});
+            update();
+            output.props.form.onValues({field: 'INVALID'});
+            update();
+          });
+
+          it('calls the onChange listener', () => {
+            expect(props.onChange.calledTwice).toEqual(true);
+            expect(props.onChange.firstCall.calledWith({field: 'VALID'})).toEqual(true);
+            expect(props.onChange.secondCall.calledWith({field: 'INVALID'})).toEqual(true);
+          });
+
+          it('changes the values', () => {
+            expect(output.props.form.values()).toEqual({field: 'INVALID'});
+          });
+
+          it('detects invalid form state', () => {
+            expect(output.props.form.isValid()).toEqual(false);
+          });
         });
       });
 
@@ -249,7 +290,7 @@ describe('form', () => {
             onChange: spy(),
           };
           render();
-          output.props.form.onValues({field: 'newValue'});
+          output.props.form.onValues({field: 'VALID'});
           update();
         });
 
@@ -258,7 +299,8 @@ describe('form', () => {
         });
 
         it('calls the onChange listener', () => {
-          expect(props.onChange.calledWith({field: 'newValue'})).toEqual(true);
+          expect(props.onChange.calledOnce).toEqual(true);
+          expect(props.onChange.calledWith({field: 'VALID'})).toEqual(true);
         });
       });
     });

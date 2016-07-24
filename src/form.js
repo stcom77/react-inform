@@ -96,8 +96,9 @@ export default function form({fields, validate = () => ({})}) {
         values: () => this.state.values,
         onValues: values => {
           if (!this.props.value) {
-            this.setState({ values });
+            this.setValues(values);
           }
+
           if (this.props.onChange) this.props.onChange(values);
         },
       };
