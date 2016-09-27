@@ -194,7 +194,7 @@ class App extends Component {
                 onChange={this.handleChange}
               />
               <button
-                className="button"
+                className="button alert"
                 type="button"
                 onClick={() => this.handleRemove(i)}
               >

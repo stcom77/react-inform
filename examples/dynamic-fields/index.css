@@ -25,6 +25,7 @@ fields {
 
 .fields .button {
   position: absolute;
+  border-bottom: 0;
 }
 
 pre {
