@@ -9,14 +9,22 @@
   margin-top: -15px;
 }
 
+fields {
+  position: relative;
+}
+
 .fields input {
   width: 25%;
   display: inline-block;
 }
 
-.fields input:last-child {
+.fields input:nth-child(2) {
   width: 75%;
   display: inline-block;
+}
+
+.fields .button {
+  position: absolute;
 }
 
 pre {

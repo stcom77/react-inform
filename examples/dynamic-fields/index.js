@@ -98,6 +98,13 @@ class App extends Component {
     });
   }
 
+  handleRemove = i => {
+    const { descriptors } = this.state;
+    this.setState({
+      descriptors: descriptors.filter((d, idx) => idx !== i),
+    });
+  }
+
   tryEval(code) {
     try {
       return eval(code);
@@ -142,11 +149,13 @@ class App extends Component {
   render() {
     const { descriptors } = this.state;
     const fields = descriptors.filter(({ fieldName }) => !!fieldName).map(d => d.fieldName);
+    const value = fields.reduce((acc, field) => ({ ...acc, [field]: (this.state.value || {})[field] }), {});
+
     return (
       <div>
         <div className="panel callout">
           <MyForm onChange={value => this.setState({ value })} fields={fields} validate={this.makeValidate()} />
-          <pre>{JSON.stringify(this.state.value || {}, 2, 2)}</pre>
+          <pre>{JSON.stringify(value || {}, 2, 2)}</pre>
         </div>
         <form className="fields">
           {descriptors.map((d, i) =>
@@ -167,6 +176,7 @@ class App extends Component {
                 value={d.validate}
                 onChange={this.handleChange}
               />
+              <button className="button" type="button" onClick={() => this.handleRemove(i)}>x</button>
             </div>
           )}
         </form>
