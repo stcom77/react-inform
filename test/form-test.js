@@ -22,7 +22,6 @@ function MyForm({ fields: formFields }) {
   );
 }
 
-
 describe('form', () => {
   let props;
   let WrappedForm;

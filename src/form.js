@@ -47,10 +47,14 @@ export default function form({
       }
     }
 
-    setValues(values, validate) {
+    setValues(values) {
       if (values === undefined) return;
-      this.setState({ values }, () => this.broadcastChange(values));
-      this.handleValidate(values, validate);
+      if (this.props.value !== undefined) {
+        this.broadcastChange(values);
+      } else {
+        this.setState({ values }, () => this.broadcastChange(values));
+        this.handleValidate(values);
+      }
     }
 
     setErrors(errors) {
@@ -90,11 +94,7 @@ export default function form({
       };
 
       if (value === this.state.values[name]) return;
-      if (this.props.value !== undefined) {
-        this.broadcastChange(values);
-      } else {
-        this.setValues(values);
-      }
+      this.setValues(values);
     }
 
     touch(vals) {
@@ -113,11 +113,7 @@ export default function form({
         forceValidate: () => this.touch(this.props.fields),
         values: () => this.state.values,
         onValues: values => {
-          if (this.props.value !== undefined) {
-            this.broadcastChange(values);
-          } else {
-            this.setValues(values);
-          }
+          this.setValues(values);
         },
       };
     }
