@@ -73,45 +73,14 @@ class App extends Component {
     }],
   };
 
-  handleChange = e => {
-    const { descriptors } = this.state;
-    const index = parseInt(e.target.getAttribute('data-index'), 10);
-    const type = e.target.getAttribute('data-type');
-    this.setState({
-      descriptors: descriptors.map((des, i) => {
-        if (i !== index) return des;
-        return {
-          ...des,
-          [type]: e.target.value,
-        };
-      }),
-    });
+  setPruned(value) {
+    this.setState({ value: this.pruned(value) });
   }
 
-  handleAdd = () => {
-    const { descriptors } = this.state;
-    this.setState({
-      descriptors: descriptors.concat({
-        fieldName: '',
-        validate: 'x => undefined',
-      }),
-    });
-  }
-
-  handleRemove = i => {
-    const { descriptors } = this.state;
-    this.setState({
-      descriptors: descriptors.filter((d, idx) => idx !== i),
-    });
-  }
-
-  tryEval(code) {
-    try {
-      return eval(code);
-    } catch (e) {
-      return undefined;
-    }
-  }
+  pruned = (value = this.state.value) =>
+    this.fields().reduce((acc, field) => (
+      value.hasOwnProperty(field) ? { ...acc, [field]: value[field] } : acc
+    ), {});
 
   convertDescriptor = ({ fieldName, validate }) => {
     const result = this.tryEval(validate);
@@ -146,16 +115,64 @@ class App extends Component {
     };
   }
 
+  fields() {
+    const { descriptors } = this.state;
+    return descriptors.filter(({ fieldName }) => !!fieldName).map(d => d.fieldName);
+  }
+
+  tryEval(code) {
+    try {
+      return eval(code);
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  handleRemove = i => {
+    const { descriptors } = this.state;
+    this.setState({
+      descriptors: descriptors.filter((d, idx) => idx !== i),
+    }, () => this.setPruned());
+  }
+
+  handleAdd = () => {
+    const { descriptors } = this.state;
+    this.setState({
+      descriptors: descriptors.concat({
+        fieldName: '',
+        validate: 'x => undefined',
+      }),
+    });
+  }
+
+  handleChange = e => {
+    const { descriptors } = this.state;
+    const index = parseInt(e.target.getAttribute('data-index'), 10);
+    const type = e.target.getAttribute('data-type');
+    this.setState({
+      descriptors: descriptors.map((des, i) => {
+        if (i !== index) return des;
+        return {
+          ...des,
+          [type]: e.target.value,
+        };
+      }),
+    });
+  }
+
   render() {
     const { descriptors } = this.state;
-    const fields = descriptors.filter(({ fieldName }) => !!fieldName).map(d => d.fieldName);
-    const value = fields.reduce((acc, field) => ({ ...acc, [field]: (this.state.value || {})[field] }), {});
 
     return (
       <div>
         <div className="panel callout">
-          <MyForm onChange={value => this.setState({ value })} fields={fields} validate={this.makeValidate()} />
-          <pre>{JSON.stringify(value || {}, 2, 2)}</pre>
+          <MyForm
+            onChange={value => this.setPruned(value)}
+            value={this.state.value}
+            fields={this.fields()}
+            validate={this.makeValidate()}
+          />
+          <pre>{JSON.stringify(this.state.value || {}, 2, 2)}</pre>
         </div>
         <form className="fields">
           {descriptors.map((d, i) =>
@@ -176,7 +193,13 @@ class App extends Component {
                 value={d.validate}
                 onChange={this.handleChange}
               />
-              <button className="button" type="button" onClick={() => this.handleRemove(i)}>x</button>
+              <button
+                className="button"
+                type="button"
+                onClick={() => this.handleRemove(i)}
+              >
+                x
+              </button>
             </div>
           )}
         </form>
