@@ -75,13 +75,6 @@ export default function form({
       }
     }
 
-    field(name) {
-      return {
-        onBlur: () => this.blur(name),
-        onChange: e => this.handleChange(name, e),
-      };
-    }
-
     broadcastChange = values => {
       if (this.props.onChange) this.props.onChange(values);
     }
