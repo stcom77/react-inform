@@ -2,14 +2,24 @@ import React, { Component, PropTypes } from 'react';
 
 import getValue from './getValue';
 
-export default function form({ fields, validate = () => ({}) }) {
+export default function form({
+  fields: defaultFields = [],
+  validate: defaultValidate = () => ({}),
+} = {}) {
   return (Wrapped) => class FormWrapper extends Component {
+    static defaultProps = {
+      fields: defaultFields,
+      validate: defaultValidate,
+    }
+
     static childContextTypes = {
       form: PropTypes.object,
       fields: PropTypes.object,
     }
 
     static propTypes = {
+      fields: PropTypes.array,
+      validate: PropTypes.func,
       value: PropTypes.object,
       onChange: PropTypes.func,
       onValidate: PropTypes.func,
@@ -28,13 +38,23 @@ export default function form({ fields, validate = () => ({}) }) {
     }
 
     componentWillReceiveProps(nextProps) {
-      this.setValues(nextProps.value);
+      if (nextProps.value !== undefined) {
+        const values = nextProps.value;
+        this.setState({ values });
+        this.handleValidate(values, nextProps.validate);
+      } else if (nextProps.validate !== undefined) {
+        this.handleValidate(this.state.values, nextProps.validate);
+      }
     }
 
     setValues(values) {
       if (values === undefined) return;
-      this.setState({ values });
-      this.handleValidate(values);
+      if (this.props.value !== undefined) {
+        this.broadcastChange(values);
+      } else {
+        this.setState({ values }, () => this.broadcastChange(values));
+        this.handleValidate(values);
+      }
     }
 
     setErrors(errors) {
@@ -46,7 +66,7 @@ export default function form({ fields, validate = () => ({}) }) {
       this.setState({ errors });
     }
 
-    handleValidate(values) {
+    handleValidate(values, validate = this.props.validate) {
       const errors = validate(values);
       if (errors.then instanceof Function) {
         errors.then(errs => this.setErrors(errs));
@@ -62,6 +82,10 @@ export default function form({ fields, validate = () => ({}) }) {
       };
     }
 
+    broadcastChange = values => {
+      if (this.props.onChange) this.props.onChange(values);
+    }
+
     handleChange(name, e) {
       const value = getValue(e);
       const values = {
@@ -70,13 +94,7 @@ export default function form({ fields, validate = () => ({}) }) {
       };
 
       if (value === this.state.values[name]) return;
-      if (this.props.onChange) this.props.onChange(values);
-      if (this.props.value !== undefined) return;
-
-      this.setState({
-        values,
-      });
-      this.handleValidate(values);
+      this.setValues(values);
     }
 
     touch(vals) {
@@ -92,14 +110,10 @@ export default function form({ fields, validate = () => ({}) }) {
     formProps() {
       return {
         isValid: () => this.state.valid,
-        forceValidate: () => this.touch(fields),
+        forceValidate: () => this.touch(this.props.fields),
         values: () => this.state.values,
         onValues: values => {
-          if (!this.props.value) {
-            this.setValues(values);
-          }
-
-          if (this.props.onChange) this.props.onChange(values);
+          this.setValues(values);
         },
       };
     }
@@ -116,7 +130,8 @@ export default function form({ fields, validate = () => ({}) }) {
     }
 
     makeFields() {
-      return fields.reduce((acc, name) => ({ ...acc, [name]: this.makeField(name) }), {});
+      return this.props.fields
+        .reduce((acc, name) => ({ ...acc, [name]: this.makeField(name) }), {});
     }
 
     generatedProps() {
@@ -132,7 +147,7 @@ export default function form({ fields, validate = () => ({}) }) {
 
     render() {
       // eslint-disable-next-line no-unused-vars
-      const { value, onChange, onValidate, ...otherProps } = this.props;
+      const { value, onChange, onValidate, validate, fields, ...otherProps } = this.props;
       return <Wrapped {...otherProps} {...this.generatedProps()} />;
     }
   };
