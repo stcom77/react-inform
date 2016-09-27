@@ -19,6 +19,8 @@ Forms are not currently fun to work with in React.  There are a lot of form libr
 
 [Form with Async validation](http://theadam.github.io/react-inform/examples/async-example/)
 
+[Dynamic Fields](http://theadam.github.io/react-inform/examples/dynamic-fields/)
+
 [Integration with react-intl v2](https://jsfiddle.net/d0hypvtz/8/)
 
 ## Installation
@@ -100,6 +102,8 @@ The validate function should accept a map of fieldnames to values, and return a 
 * `value`: to control the data in the form from the parent of a form.
 * `onChange`: to react to changes to the form in the parent of a form.
 * `onValidate`: to react to changes in the validation state of the form.  The callback will be passed a boolean that is `true` when the form becomes valid.
+* `fields`: Can be used instead of the `field` key in the decorator to control the list of fields in the form
+* `validate`: Can be used instead of the `validate` key in the decorator to control the validate function
 
 #### Properties passed to wrapped components
 
@@ -109,7 +113,7 @@ Form contains some utility functions to affect the wrapping form.  These include
 
 * `isValid()`: returns true if all of the fields are valid
 * `forceValidate()`: Causes all of the fields to get passed their error properties.  Usually errors are only passed after the field has been "touched" (either after onBlur or onChange).
-* `value()`: returns the current value of all the form fields as a map.
+* `values()`: returns the current value of all the form fields as a map.
 * `onValues(values)`: forcefully sets all of the values in the form to the passed values.
 
 ##### fields
@@ -154,7 +158,7 @@ A Component which can be used inside a React Component wrapped with `react-infor
 
 ### FeedbackFormSubmit
 
-A Component which can be used inside a React Component wrapped with `react-inform`.  When clicked, if the form has invalid fields, it will force those fields' errors to be passed as props.  If the form is valid, it will submit theform.
+A Component which can be used inside a React Component wrapped with `react-inform`.  When clicked, if the form has invalid fields, it will force those fields' errors to be passed as props.  If the form is valid, it will submit the form.
 
 ## License
 
