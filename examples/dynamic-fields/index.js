@@ -13,15 +13,11 @@ import {
 
 alertify.logPosition('top right');
 
-function LabeledInput({ text, error, ...rest }) {
-  let htmlFor = undefined;
-  if (rest.id) {
-    htmlFor = rest.id;
-  }
+function LabeledInput({ text, error, id, props }) {
   return (
     <div>
-      <label htmlFor={htmlFor}>{text}</label>
-      <input placeholder={text} type="text" {...rest} />
+      <label htmlFor={id}>{text}</label>
+      <input id={id} placeholder={text} type="text" {...props} />
       <span className="ui-hint">{error}</span>
     </div>
   );

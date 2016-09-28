@@ -18,11 +18,17 @@ import { presets } from 'mation';
 
 alertify.logPosition('top right');
 
-function AnimatedInput({ text, error, ...rest }) {
+function AnimatedInput({ text, error, id, props }) {
   return (
     <div>
-      <label htmlFor={rest.id}>{text}</label>
-      <input placeholder={text} style={{ zIndex: 2, position: 'relative' }} type="text" {...rest} />
+      <label htmlFor={id}>{text}</label>
+      <input
+        id={id}
+        placeholder={text}
+        style={{ zIndex: 2, position: 'relative' }}
+        type="text"
+        {...props}
+      />
       <AnimatedUiHint>{error}</AnimatedUiHint>
     </div>
   );
@@ -88,7 +94,7 @@ class MyForm extends Component {
             id="check-b"
             name="check-b"
             style={{ position: 'relative', zIndex: 2 }}
-            {...checkbox}
+            {...checkbox.props}
           />
           Checkbox Just For Fun
           <AnimatedUiHint>{checkbox.error}</AnimatedUiHint>
