@@ -12,7 +12,7 @@ describe('FeedbackFormSubmit', () => {
 
   beforeEach(() => {
     props = {
-      foo: 'bar',
+      value: 'bar',
       onClick: spy(),
       onInvalid: spy(),
     };
@@ -33,7 +33,7 @@ describe('FeedbackFormSubmit', () => {
     });
 
     it('passes extra props through', () => {
-      expect(render().find('input').props().foo).to.equal('bar');
+      expect(render().find('input').props().value).to.equal('bar');
     });
 
     describe('when clicked', () => {
@@ -75,7 +75,7 @@ describe('FeedbackFormSubmit', () => {
     });
 
     it('passes extra props through', () => {
-      expect(render().find('input').props().foo).to.equal('bar');
+      expect(render().find('input').props().value).to.equal('bar');
     });
 
     describe('when clicked', () => {

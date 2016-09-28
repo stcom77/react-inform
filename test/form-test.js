@@ -16,7 +16,7 @@ const validate = ({ field }) => {
 function MyForm({ fields: formFields }) {
   return (
     <div>
-      <input type="text" {...formFields.field} />
+      <input type="text" {...formFields.field.props} />
       <span>{formFields.field.error}</span>
     </div>
   );
