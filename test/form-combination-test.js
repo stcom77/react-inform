@@ -5,6 +5,8 @@ import { mount } from 'enzyme';
 
 import form from '../src/form';
 
+const DummyInput = () => null;
+
 // For testing the different combinations of form setup
 describe('combinations', () => {
   const descriptor = {
@@ -23,7 +25,7 @@ describe('combinations', () => {
       },
       form: (
         form(descriptor)(
-          ({ fields }) => <input type="text" {...fields.test} />
+          ({ fields }) => <DummyInput {...fields.test} />
         )
       ),
     }, {
@@ -40,7 +42,7 @@ describe('combinations', () => {
       },
       form: (
         form(descriptor)(
-          ({ fields }) => <input type="text" {...fields.test} />
+          ({ fields }) => <DummyInput type="text" {...fields.test} />
         )
       ),
     }, {
@@ -53,7 +55,7 @@ describe('combinations', () => {
       },
       form: (
         form()(
-          ({ fields }) => <input type="text" {...fields.test} />
+          ({ fields }) => <DummyInput type="text" {...fields.test} />
         )
       ),
     }, {
@@ -71,7 +73,7 @@ describe('combinations', () => {
       },
       form: (
         form()(
-          ({ fields }) => <input type="text" {...fields.test} />
+          ({ fields }) => <DummyInput type="text" {...fields.test} />
         )
       ),
     },
@@ -91,11 +93,11 @@ describe('combinations', () => {
       };
 
       it('has the right starting value', () => {
-        expect(render().find('input').props().value).to.eq('');
+        expect(render().find(DummyInput).props().value).to.eq('');
       });
 
       it('has no errors initially', () => {
-        expect(render().find('input').props().error).to.eq(undefined);
+        expect(render().find(DummyInput).props().error).to.eq(undefined);
       });
 
       it('does not call onChange initially', () => {
@@ -106,16 +108,16 @@ describe('combinations', () => {
       describe('when changed to invalid', () => {
         const changed = () => {
           const comp = render();
-          comp.find('input').props().onChange('invalid');
+          comp.find(DummyInput).props().onChange('invalid');
           return comp;
         };
 
         it('has the right value', () => {
-          expect(changed().find('input').props().value).to.eq('invalid');
+          expect(changed().find(DummyInput).props().value).to.eq('invalid');
         });
 
         it('has no error', () => {
-          expect(changed().find('input').props().error).to.eq(undefined);
+          expect(changed().find(DummyInput).props().error).to.eq(undefined);
         });
 
         it('calls onChange once', () => {
@@ -131,16 +133,16 @@ describe('combinations', () => {
         describe('when blurred', () => {
           const blurred = () => {
             const comp = changed();
-            comp.find('input').props().onBlur();
+            comp.find(DummyInput).props().onBlur();
             return comp;
           };
 
           it('has the right value', () => {
-            expect(blurred().find('input').props().value).to.eq('invalid');
+            expect(blurred().find(DummyInput).props().value).to.eq('invalid');
           });
 
           it('has the error', () => {
-            expect(blurred().find('input').props().error).to.eq('Must be valid');
+            expect(blurred().find(DummyInput).props().error).to.eq('Must be valid');
           });
 
           it('calls onChange once', () => {
@@ -165,7 +167,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('Different message');
+              expect(invalidate().find(DummyInput).props().error).to.eq('Different message');
             });
 
             it('does not call onChange again', () => {
@@ -179,16 +181,16 @@ describe('combinations', () => {
       describe('when changed to valid', () => {
         const changed = () => {
           const comp = render();
-          comp.find('input').props().onChange('valid');
+          comp.find(DummyInput).props().onChange('valid');
           return comp;
         };
 
         it('has the right value', () => {
-          expect(changed().find('input').props().value).to.eq('valid');
+          expect(changed().find(DummyInput).props().value).to.eq('valid');
         });
 
         it('has no error', () => {
-          expect(changed().find('input').props().error).to.eq(undefined);
+          expect(changed().find(DummyInput).props().error).to.eq(undefined);
         });
 
         it('calls onChange once', () => {
@@ -204,16 +206,16 @@ describe('combinations', () => {
         describe('when blurred', () => {
           const blurred = () => {
             const comp = changed();
-            comp.find('input').props().onBlur();
+            comp.find(DummyInput).props().onBlur();
             return comp;
           };
 
           it('has the right value', () => {
-            expect(blurred().find('input').props().value).to.eq('valid');
+            expect(blurred().find(DummyInput).props().value).to.eq('valid');
           });
 
           it('has no error', () => {
-            expect(blurred().find('input').props().error).to.eq(undefined);
+            expect(blurred().find(DummyInput).props().error).to.eq(undefined);
           });
 
           it('calls onChange once', () => {
@@ -238,7 +240,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('Must not be valid');
+              expect(invalidate().find(DummyInput).props().error).to.eq('Must not be valid');
             });
 
             it('does not call onChange again', () => {
@@ -258,7 +260,7 @@ describe('combinations', () => {
               };
 
               it('removes the error', () => {
-                expect(revalidate().find('input').props().error).to.eq(undefined);
+                expect(revalidate().find(DummyInput).props().error).to.eq(undefined);
               });
 
               it('does not call onChange again', () => {
@@ -271,7 +273,7 @@ describe('combinations', () => {
           describe('when validate and value change to be invalid', () => {
             const invalidate = () => {
               const comp = blurred();
-              comp.find('input').props().onChange('other');
+              comp.find(DummyInput).props().onChange('other');
               const props = {
                 ...comp.props(),
                 validate: ({ test }) => (test === 'other' ? { test: 'suddenly invalid' } : {}),
@@ -281,7 +283,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('suddenly invalid');
+              expect(invalidate().find(DummyInput).props().error).to.eq('suddenly invalid');
             });
 
             it('calls onChange again', () => {
@@ -308,11 +310,11 @@ describe('combinations', () => {
         };
 
         it('has the right value', () => {
-          expect(changed().find('input').props().value).to.eq('invalid');
+          expect(changed().find(DummyInput).props().value).to.eq('invalid');
         });
 
         it('has no error', () => {
-          expect(changed().find('input').props().error).to.eq(undefined);
+          expect(changed().find(DummyInput).props().error).to.eq(undefined);
         });
 
         it('does not call onChange', () => {
@@ -323,16 +325,16 @@ describe('combinations', () => {
         describe('when blurred', () => {
           const blurred = () => {
             const comp = changed();
-            comp.find('input').props().onBlur();
+            comp.find(DummyInput).props().onBlur();
             return comp;
           };
 
           it('has the right value', () => {
-            expect(blurred().find('input').props().value).to.eq('invalid');
+            expect(blurred().find(DummyInput).props().value).to.eq('invalid');
           });
 
           it('has the error', () => {
-            expect(blurred().find('input').props().error).to.eq('Must be valid');
+            expect(blurred().find(DummyInput).props().error).to.eq('Must be valid');
           });
 
           it('does not call onChange', () => {
@@ -352,7 +354,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('Different message');
+              expect(invalidate().find(DummyInput).props().error).to.eq('Different message');
             });
 
             it('does not call onChange', () => {
@@ -374,11 +376,11 @@ describe('combinations', () => {
         };
 
         it('has the right value', () => {
-          expect(changed().find('input').props().value).to.eq('valid');
+          expect(changed().find(DummyInput).props().value).to.eq('valid');
         });
 
         it('has no error', () => {
-          expect(changed().find('input').props().error).to.eq(undefined);
+          expect(changed().find(DummyInput).props().error).to.eq(undefined);
         });
 
         it('does not call onChange', () => {
@@ -389,16 +391,16 @@ describe('combinations', () => {
         describe('when blurred', () => {
           const blurred = () => {
             const comp = changed();
-            comp.find('input').props().onBlur();
+            comp.find(DummyInput).props().onBlur();
             return comp;
           };
 
           it('has the right value', () => {
-            expect(blurred().find('input').props().value).to.eq('valid');
+            expect(blurred().find(DummyInput).props().value).to.eq('valid');
           });
 
           it('has no error', () => {
-            expect(blurred().find('input').props().error).to.eq(undefined);
+            expect(blurred().find(DummyInput).props().error).to.eq(undefined);
           });
 
           it('does not call onChange', () => {
@@ -418,7 +420,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('Must not be valid');
+              expect(invalidate().find(DummyInput).props().error).to.eq('Must not be valid');
             });
 
             it('does not call onChange', () => {
@@ -438,7 +440,7 @@ describe('combinations', () => {
               };
 
               it('removes the error', () => {
-                expect(revalidate().find('input').props().error).to.eq(undefined);
+                expect(revalidate().find(DummyInput).props().error).to.eq(undefined);
               });
 
               it('does not call onChange', () => {
@@ -461,7 +463,7 @@ describe('combinations', () => {
             };
 
             it('has an error', () => {
-              expect(invalidate().find('input').props().error).to.eq('suddenly invalid');
+              expect(invalidate().find(DummyInput).props().error).to.eq('suddenly invalid');
             });
 
             it('does not call onChange', () => {

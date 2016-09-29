@@ -21,7 +21,7 @@ Forms are not currently fun to work with in React.  There are a lot of form libr
 
 [Dynamic Fields](http://theadam.github.io/react-inform/examples/dynamic-fields/)
 
-[Integration with react-intl v2](https://jsfiddle.net/d0hypvtz/8/)
+[Integration with react-intl v2](https://jsfiddle.net/theadam/d0hypvtz/21/)
 
 ## Installation
 
@@ -29,7 +29,7 @@ Forms are not currently fun to work with in React.  There are a lot of form libr
 
 ## Guide
 
-Creating a [simple validating form](https://jsfiddle.net/theadam/Lc3nkx7g/3/embedded/result%2Cjs%2Ccss%2Chtml%2Cresources/) is easy with `react-inform`.
+Creating a [simple validating form](https://jsfiddle.net/theadam/Lc3nkx7g/5/embedded/result%2Cjs%2Ccss%2Chtml%2Cresources/) is easy with `react-inform`.
 
 `react-inform` provides a simple decorator.  To that decorator you provide a list of fields in the form, and an optional validate function.  The `validate` function takes in an object where the keys are fieldnames and the values are the values of the fields, and it should return an object where the keys are fieldnames and the values are error strings.
 
@@ -79,15 +79,15 @@ MyForm = form({
 The form function wraps your react component passing a `form` and `fields` property.  The `fields` property can be "plugged into" regular inputs in your render function.  The fields also willl have errors if your validate function returned any!
 
 ```jsx
-<input type="text" placeholder="Username" {...username}/>
+<input type="text" placeholder="Username" {...username.props} />
 <span>{username.error}</span>
-<input type="password" placeholder="Password" {...password}/>
+<input type="password" placeholder="Password" {...password.props} />
 <span>{password.error}</span>
-<input type="password" placeholder="Confirm Password" {...confirmPassword}/>
+<input type="password" placeholder="Confirm Password" {...confirmPassword.props} />
 <span>{confirmPassword.error}</span>
 ```
 
-Simple!  Your form now validates, and keeps track of its state without all the boilerplate!  The complete working example can be seen [here!](https://jsfiddle.net/theadam/Lc3nkx7g/3/embedded/result%2Cjs%2Ccss%2Chtml%2Cresources/)
+Simple!  Your form now validates, and keeps track of its state without all the boilerplate!  The complete working example can be seen [here!](https://jsfiddle.net/theadam/Lc3nkx7g/5/embedded/result%2Cjs%2Ccss%2Chtml%2Cresources/)
 
 ## Api
 
@@ -118,7 +118,17 @@ Form contains some utility functions to affect the wrapping form.  These include
 
 ##### fields
 
-`fields` is a map of the fields you passed in.  Each field has a value, onChange, onFocus, and onBlur property so that they can be passed into regular input components and have them be controlled with `react-inform`.  If there is an error message on a field, the field will also have an error property.
+`fields` is a map of the fields you passed in.  Each field has a value, onChange, and onBlur property so that they can be passed into regular input components and have them be controlled with `react-inform`.  If there is an error message on a field, the field will also have an error property.
+
+All of the props that should be passed to your rendered input component (value, onChange, and onBlur) are also available using the `props` property.  For example:
+
+```jsx
+const { fieldName } = this.props.fields;
+...
+<input type="text" {...fieldName.props} />
+```
+
+This keeps react from complaining about unknown props being passed to input components.  See [this link](https://gist.github.com/jimfb/d99e0678e9da715ccf6454961ef04d1b) for more details.
 
 ### createValidate(ruleMap)
 

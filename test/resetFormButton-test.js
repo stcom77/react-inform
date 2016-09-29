@@ -12,7 +12,7 @@ describe('ResetFormButton', () => {
 
   beforeEach(() => {
     props = {
-      foo: 'bar',
+      value: 'bar',
     };
     context = { form: {} };
   });

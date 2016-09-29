@@ -11,7 +11,7 @@ describe('DisabledFormSubmit', () => {
 
   beforeEach(() => {
     props = {
-      foo: 'bar',
+      value: 'bar',
     };
   });
 
@@ -29,7 +29,7 @@ describe('DisabledFormSubmit', () => {
     });
 
     it('passes extra props through', () => {
-      expect(render().find('input').props().foo).to.equal('bar');
+      expect(render().find('input').props().value).to.equal('bar');
     });
 
     it('is enabled', () => {
@@ -51,7 +51,7 @@ describe('DisabledFormSubmit', () => {
     });
 
     it('passes extra props through', () => {
-      expect(render().find('input').props().foo).to.equal('bar');
+      expect(render().find('input').props().value).to.equal('bar');
     });
 
     it('is disabled', () => {

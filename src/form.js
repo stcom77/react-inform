@@ -111,14 +111,23 @@ export default function form({
       };
     }
 
-    makeField(name) {
-      const { values, errors, touched } = this.state;
+    baseProps(name) {
+      const { values } = this.state;
       return {
         onChange: e => this.handleChange(name, e),
         onBlur: () => this.touch([name]),
         value: values[name] || '',
-        error: touched[name] ? errors[name] : undefined,
         checked: typeof values[name] === 'boolean' ? values[name] : undefined,
+      };
+    }
+
+    makeField(name) {
+      const { errors, touched } = this.state;
+      const baseProps = this.baseProps(name);
+      return {
+        ...baseProps,
+        error: touched[name] ? errors[name] : undefined,
+        props: baseProps,
       };
     }
 
