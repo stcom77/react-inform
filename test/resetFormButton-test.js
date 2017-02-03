@@ -52,6 +52,7 @@ describe('ResetFormButton', () => {
       context = {
         form: {
           onValues: spy(),
+          resetTouched: spy(),
         },
       };
     });
@@ -59,6 +60,21 @@ describe('ResetFormButton', () => {
     it('calls the forms onValues with an empty array', () => {
       clicked();
       expect(context.form.onValues.calledWith({})).to.equal(true);
+    });
+
+    describe('when resetTouched is set', () => {
+      beforeEach(() => {
+        props = {
+          ...props,
+          resetTouched: true,
+        };
+      });
+
+      it('calls the forms onValues with an empty array', () => {
+        clicked();
+        expect(context.form.resetTouched.calledOnce).to.equal(true);
+        expect(context.form.resetTouched.calledWith()).to.equal(true);
+      });
     });
   });
 });

@@ -16,7 +16,7 @@ function validateField(value, values, rule) {
   const result = rule.value(value, values);
 
   if (hasThen(result)) {
-    return result.then(res => {
+    return result.then((res) => {
       if (!res) return rule.key;
       return validateField(value, values, rule.next());
     });
@@ -26,16 +26,16 @@ function validateField(value, values, rule) {
 
 
 export default function createValidate(rulesMap) {
-  return values => {
+  return (values) => {
     const errors = {};
     const promises = [];
-    Object.keys(rulesMap).forEach(key => {
+    Object.keys(rulesMap).forEach((key) => {
       const rules = rulesMap[key];
       const value = values[key];
       const result = validateField(value, values, gen(rules));
 
       if (hasThen(result)) {
-        promises.push(result.then(v => {
+        promises.push(result.then((v) => {
           if (v !== undefined) {
             errors[key] = v;
           }

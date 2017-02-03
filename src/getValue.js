@@ -1,7 +1,7 @@
-const getSelectedValues = options => {
+const getSelectedValues = (options) => {
   const result = [];
   if (options) {
-    for (let index = 0; index < options.length; index++) {
+    for (let index = 0; index < options.length; index += 1) {
       const option = options[index];
       if (option.selected) {
         result.push(option.value);
@@ -20,7 +20,7 @@ export default function getValue(event) {
       return checked;
     }
     if (type === 'file') {
-      return files || dataTransfer && dataTransfer.files;
+      return files || (dataTransfer && dataTransfer.files);
     }
     if (type === 'select-multiple') {
       return getSelectedValues(event.target.options);

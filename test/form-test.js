@@ -119,14 +119,20 @@ describe('form', () => {
         });
 
         it('passes down the error property', () =>
-          asyncChange().then(comp => {
+          asyncChange().then((comp) => {
             expect(comp.find('span').text()).to.equal('REQUIRED');
-          })
+          }),
         );
       });
     });
 
     describe('onBlur', () => {
+      beforeEach(() => {
+        props = {
+          onTouch: spy(),
+        };
+      });
+
       describe('when the value is invalid', () => {
         const blur = () => {
           const comp = render();
@@ -136,6 +142,49 @@ describe('form', () => {
 
         it('passes down the error property', () => {
           expect(blur().find('span').text()).to.equal('REQUIRED');
+        });
+
+        it('calls the onTouch listenr', () => {
+          blur();
+          expect(props.onTouch.calledOnce).to.equal(true);
+          expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: true });
+        });
+
+        describe('when there is a touched false prop', () => {
+          beforeEach(() => {
+            props = {
+              ...props,
+              touched: { field: false },
+            };
+          });
+
+          it('does not pass the error', () => {
+            expect(blur().find('span').text()).to.equal('');
+          });
+
+          it('calls the onTouch listenr', () => {
+            blur();
+            expect(props.onTouch.calledOnce).to.equal(true);
+            expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: true });
+          });
+        });
+
+        describe('when there is a touched tru prop', () => {
+          beforeEach(() => {
+            props = {
+              ...props,
+              touched: { field: true },
+            };
+          });
+
+          it('passes down the error', () => {
+            expect(blur().find('span').text()).to.equal('REQUIRED');
+          });
+
+          it('does not call the onTouch prop', () => {
+            blur();
+            expect(props.onTouch.callCount).to.equal(0);
+          });
         });
       });
 
@@ -147,8 +196,14 @@ describe('form', () => {
           return comp;
         };
 
-        it('passes down the error property', () => {
+        it('does not pass down the error property', () => {
           expect(blur().find('span').text()).to.equal('');
+        });
+
+        it('calls the onTouch listenr', () => {
+          blur();
+          expect(props.onTouch.calledOnce).to.equal(true);
+          expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: true });
         });
       });
     });
@@ -195,6 +250,190 @@ describe('form', () => {
 
         it('returns false', () => {
           expect(force().find('span').text()).to.equal('REQUIRED');
+        });
+      });
+    });
+
+    describe('touch', () => {
+      beforeEach(() => {
+        props = {
+          onTouch: spy(),
+        };
+      });
+
+      describe('when the field is invalid', () => {
+        describe('when fieldname is passed', () => {
+          const touch = () => {
+            const comp = render();
+            comp.find(MyForm).props().form.touch(['field']);
+            return comp;
+          };
+
+          it('shows the error', () => {
+            expect(touch().find('span').text()).to.equal('REQUIRED');
+          });
+
+          it('calls the onTouch handler', () => {
+            touch();
+            expect(props.onTouch.calledOnce).to.equal(true);
+            expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: true });
+          });
+
+          describe('when there is a touched false prop', () => {
+            beforeEach(() => {
+              props = {
+                ...props,
+                touched: { field: false },
+              };
+            });
+
+            it('does not show the error', () => {
+              expect(touch().find('span').text()).to.equal('');
+            });
+
+            it('calls the onTouch handler', () => {
+              touch();
+              expect(props.onTouch.calledOnce).to.equal(true);
+              expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: true });
+            });
+          });
+        });
+
+
+        describe('when non-existent fieldname is passed', () => {
+          const touch = () => {
+            const comp = render();
+            comp.find(MyForm).props().form.touch(['another']);
+            return comp;
+          };
+
+          it('does not show the error', () => {
+            expect(touch().find('span').text()).to.equal('');
+          });
+
+          it('does not call the onTouch prop', () => {
+            touch();
+            expect(props.onTouch.callCount).to.eq(0);
+          });
+
+          describe('when there is a touched true prop', () => {
+            beforeEach(() => {
+              props = {
+                ...props,
+                touched: { field: true },
+              };
+            });
+
+            it('shows the error', () => {
+              expect(touch().find('span').text()).to.equal('REQUIRED');
+            });
+
+            it('does not call the onTouch prop', () => {
+              touch();
+              expect(props.onTouch.callCount).to.eq(0);
+            });
+          });
+        });
+      });
+    });
+
+    describe('untouch', () => {
+      beforeEach(() => {
+        props = {
+          onTouch: spy(),
+        };
+      });
+
+      describe('when the field is invalid', () => {
+        describe('when fieldname is passed', () => {
+          const touch = () => {
+            const comp = render();
+            comp.find(MyForm).props().form.forceValidate();
+            props.onTouch.reset();
+            comp.find(MyForm).props().form.untouch(['field']);
+            return comp;
+          };
+
+          it('does not show the error', () => {
+            expect(touch().find('span').text()).to.equal('');
+          });
+
+          it('calls the onTouch prop', () => {
+            touch();
+            expect(props.onTouch.calledOnce).to.equal(true);
+            expect(props.onTouch.getCall(0).args[0]).to.deep.equal({ field: false });
+          });
+
+          describe('when there is a touched true prop', () => {
+            beforeEach(() => {
+              props = {
+                ...props,
+                touched: { field: true },
+              };
+            });
+
+            it('shows the error', () => {
+              expect(touch().find('span').text()).to.equal('REQUIRED');
+            });
+
+            it('calls the onTouch prop', () => {
+              touch();
+              expect(props.onTouch.callCount).to.eq(1);
+              expect(props.onTouch.getCall(0).args[0]).to.deep.eq({ field: false });
+            });
+          });
+        });
+
+        describe('non-existent fieldname is passed', () => {
+          const touch = () => {
+            const comp = render();
+            comp.find(MyForm).props().form.forceValidate();
+            props.onTouch.reset();
+            comp.find(MyForm).props().form.untouch(['another']);
+            return comp;
+          };
+
+          it('shows the error', () => {
+            expect(touch().find('span').text()).to.equal('REQUIRED');
+          });
+
+          it('does not call the onTouch prop', () => {
+            touch();
+            expect(props.onTouch.callCount).to.equal(0);
+          });
+
+          describe('when there is a touched false prop', () => {
+            beforeEach(() => {
+              props = {
+                ...props,
+                touched: { field: false },
+              };
+            });
+
+            it('shows the error', () => {
+              expect(touch().find('span').text()).to.equal('');
+            });
+
+            it('does not call the onTouch prop', () => {
+              touch();
+              expect(props.onTouch.callCount).to.eq(0);
+            });
+          });
+        });
+      });
+    });
+
+    describe('resetTouched', () => {
+      describe('when the field is invalid', () => {
+        const reset = () => {
+          const comp = render();
+          comp.find(MyForm).props().form.forceValidate();
+          comp.find(MyForm).props().form.resetTouched();
+          return comp;
+        };
+
+        it('does not show the error', () => {
+          expect(reset().find('span').text()).to.equal('');
         });
       });
     });

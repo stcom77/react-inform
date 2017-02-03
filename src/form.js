@@ -6,7 +6,7 @@ export default function form({
   fields: defaultFields = [],
   validate: defaultValidate = () => ({}),
 } = {}) {
-  return (Wrapped) => class FormWrapper extends Component {
+  return Wrapped => class FormWrapper extends Component {
     static defaultProps = {
       fields: defaultFields,
       validate: defaultValidate,
@@ -21,12 +21,13 @@ export default function form({
       fields: PropTypes.array,
       validate: PropTypes.func,
       value: PropTypes.object,
+      touched: PropTypes.object,
+      onTouch: PropTypes.func,
       onChange: PropTypes.func,
       onValidate: PropTypes.func,
     }
 
     state = {
-      touched: {},
       errors: {},
       valid: undefined,
     }
@@ -34,6 +35,10 @@ export default function form({
     componentWillMount() {
       const values = this.props.value || {};
       this.setState({ values });
+
+      const touched = this.props.touched || {};
+      this.setState({ touched });
+
       this.handleValidate(values);
     }
 
@@ -44,6 +49,10 @@ export default function form({
         this.handleValidate(values, nextProps.validate);
       } else if (nextProps.validate !== undefined) {
         this.handleValidate(this.state.values, nextProps.validate);
+      }
+      if (nextProps.touched !== undefined) {
+        const touched = nextProps.touched;
+        this.setState({ touched });
       }
     }
 
@@ -75,8 +84,12 @@ export default function form({
       }
     }
 
-    broadcastChange = values => {
+    broadcastChange = (values) => {
       if (this.props.onChange) this.props.onChange(values);
+    }
+
+    broadcastTouched = (touched) => {
+      if (this.props.onTouch) this.props.onTouch(touched);
     }
 
     handleChange(name, e) {
@@ -90,22 +103,34 @@ export default function form({
       this.setValues(values);
     }
 
-    touch(vals) {
-      const allTouched = vals.reduce((acc, name) => acc && this.state.touched[name], true);
-      if (allTouched) return;
+    updateTouched(touched) {
+      if (this.props.touched !== undefined) {
+        this.broadcastTouched(touched);
+      } else {
+        this.setState({ touched }, () => this.broadcastTouched(touched));
+      }
+    }
 
-      this.setState({ touched: {
-        ...this.state.touched,
-        ...vals.reduce((acc, name) => ({ ...acc, [name]: true }), {}),
-      } });
+    touch(preVals, toVal = true) {
+      const vals = preVals.filter(v => this.props.fields.indexOf(v) !== -1);
+      const alreadySet =
+        vals.reduce((acc, name) => acc && this.state.touched[name] === toVal, true);
+      if (alreadySet) return;
+
+      const touched = vals.reduce((acc, name) => ({ ...acc, [name]: toVal }), this.state.touched);
+
+      this.updateTouched(touched);
     }
 
     formProps() {
       return {
         isValid: () => this.state.valid,
+        touch: (vals = []) => this.touch(vals),
         forceValidate: () => this.touch(this.props.fields),
+        untouch: (vals = []) => this.touch(vals, false),
+        resetTouched: () => this.touch(this.props.fields, false),
         values: () => this.state.values,
-        onValues: values => {
+        onValues: (values) => {
           this.setValues(values);
         },
       };

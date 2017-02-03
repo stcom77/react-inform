@@ -99,22 +99,31 @@ The validate function should accept a map of fieldnames to values, and return a 
 
 #### Accepted properties
 
-* `value`: to control the data in the form from the parent of a form.
-* `onChange`: to react to changes to the form in the parent of a form.
-* `onValidate`: to react to changes in the validation state of the form.  The callback will be passed a boolean that is `true` when the form becomes valid.
-* `fields`: Can be used instead of the `field` key in the decorator to control the list of fields in the form
-* `validate`: Can be used instead of the `validate` key in the decorator to control the validate function
+| Property | Description |
+|---------|----------|
+| `value`| to control the data in the form from the parent of a form. |
+| `onChange`| to react to changes to the form in the parent of a form. |
+| `onValidate`| to react to changes in the validation state of the form.  The callback will be passed a boolean that is `true` when the form becomes valid. |
+| `fields`| Can be used instead of the `field` key in the decorator to control the list of fields in the form |
+| `validate`| Can be used instead of the `validate` key in the decorator to control the validate function |
+| `touched`| An object to control the `touched` state of each field.  The objects shape is `{ [fieldName]: [boolean], ... }` |
+| `onTouch`| An event fired anytime the touch state of any field in the form changes.  The handler receives the entire touched state of the form, with the same shape as the value for the `touched` prop |
 
 #### Properties passed to wrapped components
 
 ##### form
 
-Form contains some utility functions to affect the wrapping form.  These include:
+Form contains some utility functions to affect the wrapping form.
 
-* `isValid()`: returns true if all of the fields are valid
-* `forceValidate()`: Causes all of the fields to get passed their error properties.  Usually errors are only passed after the field has been "touched" (either after onBlur or onChange).
-* `values()`: returns the current value of all the form fields as a map.
-* `onValues(values)`: forcefully sets all of the values in the form to the passed values.
+| Function | Description |
+|----------|-------|
+| `isValid()`| returns true if all of the fields are valid |
+| `forceValidate()`| Causes all of the fields to get passed their error properties by setting every field's touched state to true.  Usually errors are only passed after the field has been "touched" (after onBlur). |
+| `values()`| returns the current value of all the form fields as a map. |
+| `onValues(values)`| forcefully sets all of the values in the form to the passed values. |
+| `touch(fields)`| sets the touched state to true for all of the fields named in the passed array arg |
+| `untouch(fields)`| sets the touched state to false for all of the fields named in the passed array arg |
+| `resetTouched()`| sets the touched state for all fields to false |
 
 ##### fields
 
@@ -161,6 +170,8 @@ Creates an object that can be passed directly to the form function / decorator u
 ### ResetFormButton
 
 A Component which can be used inside a React Component wrapped with `react-inform`.  When clicked it will reset the form so that it contains no values.
+
+Accepts a `resetTouched` boolean prop.  When set to true, clicking the reset button will also reset all the fields' touched states.
 
 ### DisabledFormSubmit
 
