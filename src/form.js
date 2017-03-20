@@ -25,6 +25,7 @@ export default function form({
       onTouch: PropTypes.func,
       onChange: PropTypes.func,
       onValidate: PropTypes.func,
+      getErrors: PropTypes.func,
     }
 
     state = {
@@ -133,6 +134,7 @@ export default function form({
         onValues: (values) => {
           this.setValues(values);
         },
+        getErrors: () => this.state.errors,
       };
     }
 
