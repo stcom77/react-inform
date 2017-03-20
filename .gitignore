@@ -1,7 +1,7 @@
 node_modules
 npm-debug.log
-lib
-dist
+#lib
+#dist
 npm-debug.log
 coverage
 .idea
